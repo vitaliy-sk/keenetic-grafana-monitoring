@@ -1,12 +1,10 @@
 import json
 import time
-import re
-
-from typing import Dict
-
 import requests
 
-def isfloat(value): return (isinstance(value, str) and re.match(r'^-?\d+(?:\.\d+)?$', value) is not None)
+from typing import Dict
+from value_normalizer import normalize_data, isvalidmetric
+
 
 class KeeneticCollector(object):
 
@@ -19,15 +17,16 @@ class KeeneticCollector(object):
 
         response = json.loads(requests.get(self._endpoint).content.decode('UTF-8'))
         prefix = self._request.split(' ')
-        metrics = self.iterate(response, prefix, [], {}, 0)
+        metrics = self.recursive_iterate(response, prefix, [], {}, 0)
 
         for metric in metrics:
             print(json.dumps(metric))
 
-    def iterate(self, data, path, metrics, tags, level):
+    def recursive_iterate(self, data, path, metrics, tags, level):
 
         if isinstance(data, dict):
 
+            data = normalize_data(data)
             tags = tags.copy()
             tags.update(self.tags(data))
             values = self.values(data)
@@ -40,16 +39,16 @@ class KeeneticCollector(object):
                 if isinstance(value, list) or isinstance(value, dict):
                     key_path = path.copy()
 
-                    if level in self._tags_levels: # Need for some API, like show processes
+                    if level in self._tags_levels:  # Need for some API, like show processes
                         tags['_'.join(path)] = key
                     else:
                         key_path.append(key)
 
-                    self.iterate(value, key_path, metrics, tags, level + 1)
+                    self.recursive_iterate(value, key_path, metrics, tags, level + 1)
 
         if isinstance(data, list):
             for idx, value in enumerate(data):
-                self.iterate(value, path, metrics, tags, level + 1)
+                self.recursive_iterate(value, path, metrics, tags, level + 1)
 
         return metrics
 
@@ -66,7 +65,7 @@ class KeeneticCollector(object):
 
         for key in data:
             value = data.get(key)
-            if isinstance(value, str) and not isfloat(value): labels[key] = value
+            if isinstance(value, str): labels[key] = value
 
         return labels
 
@@ -76,16 +75,13 @@ class KeeneticCollector(object):
         for key in data:
             value = data.get(key)
 
-            if isinstance(value, int): values[key] = value
-            if isinstance(value, bool): values[key] = value
-            if isfloat(value): values[key] = float(value)
+            if isvalidmetric(value): values[key] = value
 
         return values
 
 
 if __name__ == '__main__':
-
     (KeeneticCollector('http://192.168.1.1:79/rci/show/processes', 'processes', [1])).collect()
-    (KeeneticCollector('http://192.168.1.1:79/rci/show/processes', 'processes', [1])).collect()
+   # (KeeneticCollector('http://192.168.1.1:79/rci/show/processes', 'processes', [1])).collect()
 
     # while True: time.sleep(1)
