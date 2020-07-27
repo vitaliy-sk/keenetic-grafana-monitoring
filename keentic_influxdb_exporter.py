@@ -3,20 +3,22 @@ import time
 import requests
 
 from typing import Dict
+
 from value_normalizer import normalize_data, isvalidmetric
 
 
 class KeeneticCollector(object):
 
-    def __init__(self, endpoint, request, tags_levels):
+    def __init__(self, endpoint, command, tags_levels):
         self._endpoint = endpoint
-        self._request = request
+        self._command = command
         self._tags_levels = tags_levels
 
     def collect(self):
 
-        response = json.loads(requests.get(self._endpoint).content.decode('UTF-8'))
-        prefix = self._request.split(' ')
+        url = '{}/show/{}'.format(self._endpoint, self._command.replace(' ', '/'))
+        response = json.loads(requests.get(url).content.decode('UTF-8'))
+        prefix = self._command.split(' ')
         metrics = self.recursive_iterate(response, prefix, [], {}, 0)
 
         for metric in metrics:
@@ -81,7 +83,15 @@ class KeeneticCollector(object):
 
 
 if __name__ == '__main__':
-    (KeeneticCollector('http://192.168.1.1:79/rci/show/processes', 'processes', [1])).collect()
-   # (KeeneticCollector('http://192.168.1.1:79/rci/show/processes', 'processes', [1])).collect()
+    configuration = json.load(open("config.json", "r"))
+    endpoint = configuration['endpoint']
+    metrics = configuration['metrics']
 
-    # while True: time.sleep(1)
+    collectors = []
+
+    for metric in metrics:
+        collectors.append( KeeneticCollector(endpoint, metric['command'], metric['tags_level']) )
+
+    while True:
+        for collector in collectors: collector.collect()
+        time.sleep(configuration['interval_sec'])

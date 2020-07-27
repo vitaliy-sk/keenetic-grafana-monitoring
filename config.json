@@ -1,0 +1,14 @@
+{
+  "endpoint" : "http://192.168.1.1:79/rci",
+  "interval_sec" : 10,
+  "metrics" : [
+    {
+      "command": "processes",
+      "tags_level" : [ 1 ]
+    },
+    {
+      "command": "ip hotspot",
+      "tags_level" : [ ]
+    }
+  ]
+}
