@@ -20,10 +20,20 @@
       "root" : "$.host[*]",
       "tags" : {
         "hostname" : "$.hostname",
-        "name" : "$.name"
+        "name" : "$.name",
+        "ssid": "$.ssid",
+        "mode": "$.mode",
+        "ip": "$.ip",
+        "mac": "$.mac"
       },
       "values" : {
-        "active": "$.active"
+        "active": "$.active",
+        "rxbytes": "$.rxbytes",
+        "txbytes": "$.txbytes",
+        "txrate": "$.txrate",
+        "uptime": "$.uptime",
+        "signal": "$.rssi",
+        "speed": "$.speed"
       }
     },
     {
