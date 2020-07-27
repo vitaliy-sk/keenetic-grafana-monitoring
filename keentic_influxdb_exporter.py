@@ -10,20 +10,21 @@ def isfloat(value): return (isinstance(value, str) and re.match(r'^-?\d+(?:\.\d+
 
 class KeeneticCollector(object):
 
-    def __init__(self, endpoint, request):
+    def __init__(self, endpoint, request, tags_levels):
         self._endpoint = endpoint
         self._request = request
+        self._tags_levels = tags_levels
 
     def collect(self):
 
         response = json.loads(requests.get(self._endpoint).content.decode('UTF-8'))
         prefix = self._request.split(' ')
-        metrics = self.iterate(response, prefix, [], {})
+        metrics = self.iterate(response, prefix, [], {}, 0)
 
         for metric in metrics:
             print(json.dumps(metric))
 
-    def iterate(self, data, path, metrics, tags):
+    def iterate(self, data, path, metrics, tags, level):
 
         if isinstance(data, dict):
 
@@ -38,12 +39,17 @@ class KeeneticCollector(object):
                 value = data.get(key)
                 if isinstance(value, list) or isinstance(value, dict):
                     key_path = path.copy()
-                    key_path.append(key)
-                    self.iterate(value, key_path, metrics, tags)
+
+                    if level in self._tags_levels: # Need for some API, like show processes
+                        tags['_'.join(path)] = key
+                    else:
+                        key_path.append(key)
+
+                    self.iterate(value, key_path, metrics, tags, level + 1)
 
         if isinstance(data, list):
             for idx, value in enumerate(data):
-                self.iterate(value, path, metrics, tags)
+                self.iterate(value, path, metrics, tags, level + 1)
 
         return metrics
 
@@ -78,7 +84,8 @@ class KeeneticCollector(object):
 
 
 if __name__ == '__main__':
-    # Usage: json_exporter.py port endpoint
-    (KeeneticCollector('http://192.168.1.1:79/rci/show/interface', 'interface')).collect()
+
+    (KeeneticCollector('http://192.168.1.1:79/rci/show/processes', 'processes', [1])).collect()
+    (KeeneticCollector('http://192.168.1.1:79/rci/show/processes', 'processes', [1])).collect()
 
     # while True: time.sleep(1)
