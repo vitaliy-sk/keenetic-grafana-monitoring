@@ -4,11 +4,39 @@
   "metrics" : [
     {
       "command": "processes",
-      "tags_level" : [ 1 ]
+      "root" : "$.process.*",
+      "tags" : {
+        "name": "~",
+        "process_name" : "$.name",
+        "pid": "$.pid"
+      },
+      "values" : {
+        "cpu": "$.statistics.cpu.cur",
+        "memory": "$.vm-size"
+      }
     },
     {
       "command": "ip hotspot",
-      "tags_level" : [ ]
+      "root" : "$.host[*]",
+      "tags" : {
+        "hostname" : "$.hostname",
+        "name" : "$.name"
+      },
+      "values" : {
+        "active": "$.active"
+      }
+    },
+    {
+      "command": "ip nat",
+      "root" : "$.[*]",
+      "tags" : {
+        "src" : "$.src",
+        "dst" : "$.dst"
+      },
+      "values" : {
+        "bytes-in": "$.bytes",
+        "bytes-out": "$.bytes-out"
+      }
     }
   ]
 }
