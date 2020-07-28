@@ -44,6 +44,23 @@
       }
     },
     {
+      "command": "interface",
+      "root" : "$.*",
+      "tags" : {
+        "id": "$.id",
+        "type": "$.type",
+        "description": "$.description",
+        "interface-name": "$.interface-name",
+        "state": "$.state",
+        "address": "$.address"
+      },
+      "values" : {
+        "mtu": "$.mtu",
+        "uptime": "$.uptime",
+        "tx-queue": "$.tx-queue"
+      }
+    },
+    {
       "command": "ip nat",
       "root" : "$.[*]",
       "tags" : {

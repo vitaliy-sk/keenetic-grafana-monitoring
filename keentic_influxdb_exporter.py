@@ -44,12 +44,15 @@ class KeeneticCollector(object):
 
             for tagName, tagPath in self._tags.items():
                 if tagPath == '~':
-                    tags[tagName] = str(root.path.fields[0])
+                    tags[tagName] = root.path.fields[0]
                 else:
-                    tags[tagName] = str(self.get_first_value(tagPath.find(root.value)))
+                    tags[tagName] = self.get_first_value(tagPath.find(root.value))
 
             for valueName, valuePath in self._values.items():
-                values[valueName] = normalize_value(self.get_first_value(valuePath.find(root.value)))
+                value = self.get_first_value(valuePath.find(root.value))
+                if value is not None: values[valueName] = normalize_value(value)
+
+            if values.__len__() == 0: continue
 
             metric = self.create_metric(self._command, tags, values)
             metrics.append(metric)
