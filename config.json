@@ -1,6 +1,13 @@
 {
   "endpoint" : "http://192.168.1.1:79/rci",
-  "interval_sec" : 10,
+  "interval_sec" : 30,
+  "influxdb" : {
+    "host" : "",
+    "port" : 80,
+    "username" : "",
+    "password" : "",
+    "db" : ""
+  },
   "metrics" : [
     {
       "command": "processes",
@@ -24,10 +31,10 @@
         "ssid": "$.ssid",
         "mode": "$.mode",
         "ip": "$.ip",
-        "mac": "$.mac"
+        "mac": "$.mac",
+        "active": "$.active"
       },
       "values" : {
-        "active": "$.active",
         "rxbytes": "$.rxbytes",
         "txbytes": "$.txbytes",
         "txrate": "$.txrate",
