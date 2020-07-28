@@ -71,6 +71,48 @@
         "bytes-in": "$.bytes",
         "bytes-out": "$.bytes-out"
       }
+    },
+    {
+      "command": "system",
+      "root" : "$",
+      "tags" : {
+        "hostname" : "$.hostname"
+      },
+      "values" : {
+        "cpuload": "$.cpuload",
+        "memtotal": "$.memtotal",
+        "memfree": "$.memfree",
+        "memcache": "$.memcache",
+        "swaptotal": "$.swaptotal",
+        "swapfree": "$.swapfree",
+        "uptime": "$.uptime",
+        "membuffers": "$.membuffers"
+      }
+    },
+    {
+      "command": "internet status",
+      "root" : "$",
+      "tags" : {},
+      "values" : {
+        "internet": "$.internet",
+        "gateway-accessible": "$.gateway-accessible",
+        "dns-accessible": "$.dns-accessible",
+        "host-accessible": "$.host-accessible",
+        "captive-accessible": "$.captive-accessible"
+      }
+    },
+    {
+      "command": "media",
+      "root" : "$.*.partition.[*]",
+      "tags" : {
+        "label" : "$.label",
+        "uuid" : "$.uuid",
+        "state" : "$.state"
+      },
+      "values" : {
+        "total": "$.total",
+        "free": "$.free"
+      }
     }
   ]
 }

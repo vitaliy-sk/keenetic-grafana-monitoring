@@ -37,6 +37,7 @@ class KeeneticCollector(object):
 
         roots = self._root.find(response)
         metrics = []
+        start_time = time.time_ns()
 
         for root in roots:
             tags = {}
@@ -56,7 +57,9 @@ class KeeneticCollector(object):
 
             metric = self.create_metric(self._command, tags, values)
             metrics.append(metric)
-            print(json.dumps(metric))
+
+        metrics.append( self.create_metric( "collector", { "command" : self._command }, { "duration" : (time.time_ns() - start_time) } ) )
+        # print(json.dumps(metrics))
 
         infuxdb_writter.write_metrics(metrics)
 
