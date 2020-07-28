@@ -104,6 +104,8 @@ if __name__ == '__main__':
         print("Configuring metric: " + metric_configuration['command'])
         collectors.append(KeeneticCollector(infuxdb_writter, endpoint, metric_configuration))
 
+    print("Configuration done. Start collecting with interval: " + str(configuration['interval_sec']) + " sec")
+
     while True:
         for collector in collectors: collector.collect()
         time.sleep(configuration['interval_sec'])
