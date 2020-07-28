@@ -113,6 +113,20 @@
         "total": "$.total",
         "free": "$.free"
       }
+    },
+    {
+      "command": "interface stat",
+      "root" : "$",
+      "param" : {
+        "name" : "GigabitEthernet1"
+      },
+      "tags" : {},
+      "values" : {
+        "rxbytes": "$.rxbytes",
+        "txbytes": "$.txbytes",
+        "rxspeed": "$.rxspeed",
+        "txspeed": "$.txspeed"
+      }
     }
   ]
 }

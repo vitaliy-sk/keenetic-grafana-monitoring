@@ -10,11 +10,12 @@ class InfuxWritter(object):
         self.init_database()
 
     def init_database(self):
+        print("Connecting to InfluxDB: " + self._configuration['host'])
         db_name = self._configuration['db']
         self._client.drop_database(db_name)
 
         if db_name not in self._client.get_list_database():
-            print("Creating: " + db_name)
+            print("Creating InfluxDB database: " + db_name)
             self._client.create_database(db_name)
 
     def write_metrics(self, metrics):

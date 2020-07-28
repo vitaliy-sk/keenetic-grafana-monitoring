@@ -1,5 +1,7 @@
 import json
 import time
+import urllib
+
 import requests
 
 from jsonpath_ng.ext import parse
@@ -22,17 +24,19 @@ def json_path_init(paths):
 
 class KeeneticCollector(object):
 
-    def __init__(self, infuxdb_writter, endpoint, command, root, tags, values):
+    def __init__(self, infuxdb_writter, endpoint, metric_configration):
         self._influx = infuxdb_writter
         self._endpoint = endpoint
-        self._command = command
-        self._root = parse(root)
-        self._tags = json_path_init(tags)
-        self._values = json_path_init(values)
+        self._command = metric_configration['command']
+        self._params = metric_configration.get('param', {})
+        self._root = parse(metric_configration['root'])
+        self._tags = json_path_init(metric_configration['tags'])
+        self._values = json_path_init(metric_configration['values'])
 
     def collect(self):
 
-        url = '{}/show/{}'.format(self._endpoint, self._command.replace(' ', '/'))
+        url = '{}/show/{}'.format(self._endpoint, self._command.replace(' ', '/')) + "?" + urllib.parse.urlencode(
+            self._params)
         response = json.loads(requests.get(url).content.decode('UTF-8'))
 
         roots = self._root.find(response)
@@ -40,7 +44,7 @@ class KeeneticCollector(object):
         start_time = time.time_ns()
 
         for root in roots:
-            tags = {}
+            tags = self._params.copy()
             values = {}
 
             for tagName, tagPath in self._tags.items():
@@ -56,10 +60,11 @@ class KeeneticCollector(object):
             if values.__len__() == 0: continue
 
             metric = self.create_metric(self._command, tags, values)
+            # print(json.dumps(metric))
             metrics.append(metric)
 
-        metrics.append( self.create_metric( "collector", { "command" : self._command }, { "duration" : (time.time_ns() - start_time) } ) )
-        # print(json.dumps(metrics))
+        metrics.append(
+            self.create_metric("collector", {"command": self._command}, {"duration": (time.time_ns() - start_time)}))
 
         infuxdb_writter.write_metrics(metrics)
 
@@ -81,6 +86,10 @@ class KeeneticCollector(object):
 
 
 if __name__ == '__main__':
+
+    print(
+        "  _  __                    _   _         _____      _ _           _             \n | |/ /                   | | (_)       / ____|    | | |         | |            \n | ' / ___  ___ _ __   ___| |_ _  ___  | |     ___ | | | ___  ___| |_ ___  _ __ \n |  < / _ \/ _ \ '_ \ / _ \ __| |/ __| | |    / _ \| | |/ _ \/ __| __/ _ \| '__|\n | . \  __/  __/ | | |  __/ |_| | (__  | |___| (_) | | |  __/ (__| || (_) | |   \n |_|\_\___|\___|_| |_|\___|\__|_|\___|  \_____\___/|_|_|\___|\___|\__\___/|_|   \n                                                                                \n                                                                                ")
+
     configuration = json.load(open("config.json", "r"))
     endpoint = configuration['endpoint']
     metrics = configuration['metrics']
@@ -89,8 +98,11 @@ if __name__ == '__main__':
 
     infuxdb_writter = InfuxWritter(configuration)
 
-    for metric in metrics:
-        collectors.append(KeeneticCollector(infuxdb_writter, endpoint, metric['command'], metric['root'], metric['tags'], metric['values']))
+    print("Connecting to router: " + endpoint)
+
+    for metric_configuration in metrics:
+        print("Configuring metric: " + metric_configuration['command'])
+        collectors.append(KeeneticCollector(infuxdb_writter, endpoint, metric_configuration))
 
     while True:
         for collector in collectors: collector.collect()
