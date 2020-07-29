@@ -8,6 +8,8 @@
                                                                                 
 ```
 
+![Example](https://user-images.githubusercontent.com/2773025/88829802-c5809900-d1d5-11ea-8cbe-de41118387b3.png)
+
 # Build from sources
 
 `docker build -t keenetic-grafana-monitoring .`
@@ -28,6 +30,8 @@
 }
 ```
 
+* Copy [metrics.json](./blob/master/config/metrics.json) and edit (Optional)
+
 * Expose Keenetic API on your router
 
 For doing this add port forwarding (Network rules -> Forwarding):
@@ -40,9 +44,23 @@ Open the port: 79
 Destination port: 79 
 ```
 
+* Import Grafana dashboard from [grafana-dashboard.json](./blob/master/config/grafana-dashboard.json)
+
 # Run with docker-compose.yml
 
 ```
-
+---
+version: '3.7'
+services:
+  keenetic-grafana-monitoring:
+    image: techh/keenetic-grafana-monitoring:1.0.0
+    container_name: keenetic-grafana-monitoring
+    # environment:
+    #  - TZ=Europe/Kiev
+    volumes:
+      - ./config/influx.json:/home/config/influx.json
+      - ./config/metrics.json:/home/config/metrics.json
+    restart: always
 ```
+
 

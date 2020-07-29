@@ -4,8 +4,8 @@ services:
   keenetic-grafana-monitoring:
     build: .
     container_name: keenetic-grafana-monitoring
-    environment:
-      - TZ=Europe/Kiev
+   # environment:
+   #   - TZ=Europe/Kiev
     volumes:
       - ./config/influx.json:/home/config/influx.json
       - ./config/metrics.json:/home/config/metrics.json
