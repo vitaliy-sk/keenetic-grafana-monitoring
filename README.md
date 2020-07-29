@@ -69,4 +69,19 @@ services:
     restart: always
 ```
 
+# Run on router
 
+* Copy repository content to your router `/opt/home/keenetic-grafana-monitoring`
+* Install Python `opkg install python3 python3-pip`
+* Install dependencies ` pip install -r requirements.txt`
+* Create script for autorun `/opt/etc/init.d/S99keeneticgrafana`
+
+```$bash
+#!/bin/sh
+
+[ "$1" != "start" ] && exit 0
+
+nohup python /opt/home/keenetic-grafana-monitoring/keentic_influxdb_exporter.py >/dev/null 2>&1 &
+```
+
+* Run `/opt/etc/init.d/S99keeneticgrafana start`
