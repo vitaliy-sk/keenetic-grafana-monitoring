@@ -1,0 +1,11 @@
+---
+version: '3.7'
+services:
+  keenetic-grafana-monitoring:
+    build: .
+    container_name: keenetic-grafana-monitoring
+    environment:
+      - TZ=Europe/Kiev
+    volumes:
+      - ./config/influx.json:/home/config/influx.json
+    restart: always

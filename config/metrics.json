@@ -1,13 +1,6 @@
 {
   "endpoint" : "http://192.168.1.1:79/rci",
   "interval_sec" : 30,
-  "influxdb" : {
-    "host" : "",
-    "port" : 80,
-    "username" : "",
-    "password" : "",
-    "db" : ""
-  },
   "metrics" : [
     {
       "command": "processes",
@@ -51,13 +44,13 @@
         "type": "$.type",
         "description": "$.description",
         "interface-name": "$.interface-name",
-        "state": "$.state",
         "address": "$.address"
       },
       "values" : {
         "mtu": "$.mtu",
         "uptime": "$.uptime",
-        "tx-queue": "$.tx-queue"
+        "tx-queue": "$.tx-queue",
+        "state": "$.state"
       }
     },
     {
@@ -106,12 +99,12 @@
       "root" : "$.*.partition.[*]",
       "tags" : {
         "label" : "$.label",
-        "uuid" : "$.uuid",
-        "state" : "$.state"
+        "uuid" : "$.uuid"
       },
       "values" : {
         "total": "$.total",
-        "free": "$.free"
+        "free": "$.free",
+        "state" : "$.state"
       }
     },
     {
@@ -119,6 +112,20 @@
       "root" : "$",
       "param" : {
         "name" : "GigabitEthernet1"
+      },
+      "tags" : {},
+      "values" : {
+        "rxbytes": "$.rxbytes",
+        "txbytes": "$.txbytes",
+        "rxspeed": "$.rxspeed",
+        "txspeed": "$.txspeed"
+      }
+    },
+    {
+      "command": "interface stat",
+      "root" : "$",
+      "param" : {
+        "name" : "PPTP0"
       },
       "tags" : {},
       "values" : {

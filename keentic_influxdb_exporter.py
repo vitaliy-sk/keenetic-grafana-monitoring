@@ -1,10 +1,10 @@
 import json
+import os
 import time
 import urllib
 
 import requests
-
-from jsonpath_ng.ext import parse
+from jsonpath_rw import parse
 
 from influxdb_writter import InfuxWritter
 from value_normalizer import normalize_value
@@ -90,13 +90,15 @@ if __name__ == '__main__':
     print(
         "  _  __                    _   _         _____      _ _           _             \n | |/ /                   | | (_)       / ____|    | | |         | |            \n | ' / ___  ___ _ __   ___| |_ _  ___  | |     ___ | | | ___  ___| |_ ___  _ __ \n |  < / _ \/ _ \ '_ \ / _ \ __| |/ __| | |    / _ \| | |/ _ \/ __| __/ _ \| '__|\n | . \  __/  __/ | | |  __/ |_| | (__  | |___| (_) | | |  __/ (__| || (_) | |   \n |_|\_\___|\___|_| |_|\___|\__|_|\___|  \_____\___/|_|_|\___|\___|\__\___/|_|   \n                                                                                \n                                                                                ")
 
-    configuration = json.load(open("config.json", "r"))
-    endpoint = configuration['endpoint']
-    metrics = configuration['metrics']
+    metrics_configuration = json.load(open(os.path.dirname(os.path.realpath(__file__)) + "/config/metrics.json", "r"))
+    influx_configuration = json.load(open(os.path.dirname(os.path.realpath(__file__)) + "/config/influx.json", "r"))
+
+    endpoint = metrics_configuration['endpoint']
+    metrics = metrics_configuration['metrics']
 
     collectors = []
 
-    infuxdb_writter = InfuxWritter(configuration)
+    infuxdb_writter = InfuxWritter(influx_configuration)
 
     print("Connecting to router: " + endpoint)
 
@@ -104,8 +106,8 @@ if __name__ == '__main__':
         print("Configuring metric: " + metric_configuration['command'])
         collectors.append(KeeneticCollector(infuxdb_writter, endpoint, metric_configuration))
 
-    print("Configuration done. Start collecting with interval: " + str(configuration['interval_sec']) + " sec")
+    print("Configuration done. Start collecting with interval: " + str(metrics_configuration['interval_sec']) + " sec")
 
     while True:
         for collector in collectors: collector.collect()
-        time.sleep(configuration['interval_sec'])
+        time.sleep(metrics_configuration['interval_sec'])

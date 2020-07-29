@@ -12,6 +12,7 @@ class InfuxWritter(object):
     def init_database(self):
         print("Connecting to InfluxDB: " + self._configuration['host'])
         db_name = self._configuration['db']
+        # self._client.drop_database(db_name)
 
         if db_name not in self._client.get_list_database():
             print("Creating InfluxDB database: " + db_name)
