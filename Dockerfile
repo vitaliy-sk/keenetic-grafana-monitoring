@@ -1,4 +1,4 @@
-FROM python:3
+FROM python:3-slim
 
 ADD keentic_influxdb_exporter.py /home
 ADD requirements.txt /home
