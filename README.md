@@ -10,6 +10,12 @@
 
 ![Example](https://user-images.githubusercontent.com/2773025/88829802-c5809900-d1d5-11ea-8cbe-de41118387b3.png)
 
+# Supporter router
+
+Tested with: Keenetic Ultra (KN-1810) KeeneticOS 3.4.12
+
+May work on other Keenetic routers
+
 # Build from sources
 
 `docker build -t keenetic-grafana-monitoring .`
