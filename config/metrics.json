@@ -24,8 +24,7 @@
         "ssid": "$.ssid",
         "mode": "$.mode",
         "ip": "$.ip",
-        "mac": "$.mac",
-        "active": "$.active"
+        "mac": "$.mac"
       },
       "values" : {
         "rxbytes": "$.rxbytes",
@@ -33,7 +32,8 @@
         "txrate": "$.txrate",
         "uptime": "$.uptime",
         "signal": "$.rssi",
-        "speed": "$.speed"
+        "speed": "$.speed",
+        "active": "$.active"
       }
     },
     {

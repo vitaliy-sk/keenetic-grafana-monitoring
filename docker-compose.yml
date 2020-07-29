@@ -8,4 +8,5 @@ services:
       - TZ=Europe/Kiev
     volumes:
       - ./config/influx.json:/home/config/influx.json
+      - ./config/metrics.json:/home/config/metrics.json
     restart: always
