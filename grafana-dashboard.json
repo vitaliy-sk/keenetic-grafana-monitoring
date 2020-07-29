@@ -1,4 +1,52 @@
 {
+  "__inputs": [
+    {
+      "name": "DS_INFLUXDB_KEENETIC",
+      "label": "InfluxDB Keenetic",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "influxdb",
+      "pluginName": "InfluxDB"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "gauge",
+      "name": "Gauge",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "7.0.2"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "influxdb",
+      "name": "InfluxDB",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -15,11 +63,11 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 34,
+  "id": null,
   "links": [],
   "panels": [
     {
-      "datasource": "InfluxDB Keenetic",
+      "datasource": "${DS_INFLUXDB_KEENETIC}",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -148,7 +196,7 @@
       "type": "stat"
     },
     {
-      "datasource": "InfluxDB Keenetic",
+      "datasource": "${DS_INFLUXDB_KEENETIC}",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -233,7 +281,7 @@
       "type": "stat"
     },
     {
-      "datasource": "InfluxDB Keenetic",
+      "datasource": "${DS_INFLUXDB_KEENETIC}",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -390,7 +438,7 @@
       "type": "gauge"
     },
     {
-      "datasource": "InfluxDB Keenetic",
+      "datasource": "${DS_INFLUXDB_KEENETIC}",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -509,7 +557,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB Keenetic",
+      "datasource": "${DS_INFLUXDB_KEENETIC}",
       "decimals": 2,
       "fieldConfig": {
         "defaults": {
@@ -691,7 +739,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB Keenetic",
+      "datasource": "${DS_INFLUXDB_KEENETIC}",
       "decimals": 2,
       "fieldConfig": {
         "defaults": {
@@ -873,7 +921,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB Keenetic",
+      "datasource": "${DS_INFLUXDB_KEENETIC}",
       "decimals": 2,
       "fieldConfig": {
         "defaults": {
@@ -1037,7 +1085,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB Keenetic",
+      "datasource": "${DS_INFLUXDB_KEENETIC}",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1164,7 +1212,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB Keenetic",
+      "datasource": "${DS_INFLUXDB_KEENETIC}",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1299,7 +1347,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB Keenetic",
+      "datasource": "${DS_INFLUXDB_KEENETIC}",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1434,7 +1482,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB Keenetic",
+      "datasource": "${DS_INFLUXDB_KEENETIC}",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1562,7 +1610,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB Keenetic",
+      "datasource": "${DS_INFLUXDB_KEENETIC}",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1691,7 +1739,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB Keenetic",
+      "datasource": "${DS_INFLUXDB_KEENETIC}",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1827,7 +1875,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB Keenetic",
+      "datasource": "${DS_INFLUXDB_KEENETIC}",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1963,7 +2011,7 @@
       }
     },
     {
-      "datasource": "InfluxDB Keenetic",
+      "datasource": "${DS_INFLUXDB_KEENETIC}",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -2114,7 +2162,7 @@
       "type": "table"
     },
     {
-      "datasource": "InfluxDB Keenetic",
+      "datasource": "${DS_INFLUXDB_KEENETIC}",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -2300,6 +2348,6 @@
   },
   "timezone": "",
   "title": "Keenetic",
-  "uid": "sdaKejxi21x",
+  "uid": "rufORtVGk",
   "version": 77
 }
