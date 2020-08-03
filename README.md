@@ -36,7 +36,7 @@ May work on other Keenetic routers
 }
 ```
 
-* Copy [metrics.json](./master/config/metrics.json) and edit (Optional)
+* Copy [metrics.json](https://github.com/vitaliy-sk/keenetic-grafana-monitoring/blob/master/config/metrics.json) and edit (Optional)
 
 * Expose Keenetic API on your router
 
