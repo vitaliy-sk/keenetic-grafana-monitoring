@@ -36,7 +36,7 @@ May work on other Keenetic routers
 }
 ```
 
-* Copy [metrics.json](./blob/master/config/metrics.json) and edit (Optional)
+* Copy [metrics.json](./master/config/metrics.json) and edit (Optional)
 
 * Expose Keenetic API on your router
 
@@ -50,7 +50,7 @@ Open the port: 79
 Destination port: 79 
 ```
 
-* Import Grafana dashboard from [grafana-dashboard.json](./blob/master/config/grafana-dashboard.json)
+* Import Grafana dashboard from [grafana.com](https://grafana.com/grafana/dashboards/12723)
 
 # Run with docker-compose.yml
 
