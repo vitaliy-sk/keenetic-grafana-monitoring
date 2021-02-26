@@ -12,13 +12,9 @@
 
 # Supporter router
 
-Tested with: Keenetic Ultra (KN-1810) KeeneticOS 3.4.12
+Tested with: Keenetic Ultra (KN-1810) KeeneticOS 3.5.6
 
-May work on other Keenetic routers
-
-# Build from sources
-
-`docker build -t keenetic-grafana-monitoring .`
+May works on other Keenetic routers
 
 # Preparation
 
@@ -52,7 +48,28 @@ Destination port: 79
 
 * Import Grafana dashboard from [grafana.com](https://grafana.com/grafana/dashboards/12723)
 
-# Run with docker-compose.yml
+# Run
+
+There are two options, you can run collector directly on the router or in Docker on separate host.
+
+## Run on router
+
+* Copy repository content to your router `/opt/home/keenetic-grafana-monitoring`
+* Install Python `opkg install python3 python3-pip`
+* Install dependencies ` pip install -r requirements.txt`
+* Create script for autorun `/opt/etc/init.d/S99keeneticgrafana`
+
+```$bash
+#!/bin/sh
+
+[ "$1" != "start" ] && exit 0
+
+nohup python /opt/home/keenetic-grafana-monitoring/keentic_influxdb_exporter.py >/dev/null 2>&1 &
+```
+
+* Run `/opt/etc/init.d/S99keeneticgrafana start`
+
+## Run on Docker
 
 ```
 ---
@@ -69,19 +86,6 @@ services:
     restart: always
 ```
 
-# Run on router
+# Build Docker image
 
-* Copy repository content to your router `/opt/home/keenetic-grafana-monitoring`
-* Install Python `opkg install python3 python3-pip`
-* Install dependencies ` pip install -r requirements.txt`
-* Create script for autorun `/opt/etc/init.d/S99keeneticgrafana`
-
-```$bash
-#!/bin/sh
-
-[ "$1" != "start" ] && exit 0
-
-nohup python /opt/home/keenetic-grafana-monitoring/keentic_influxdb_exporter.py >/dev/null 2>&1 &
-```
-
-* Run `/opt/etc/init.d/S99keeneticgrafana start`
+`docker build -t keenetic-grafana-monitoring .`

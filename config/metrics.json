@@ -111,7 +111,49 @@
       "command": "interface stat",
       "root" : "$",
       "param" : {
-        "name" : "GigabitEthernet1"
+        "name" : "ISP"
+      },
+      "tags" : {},
+      "values" : {
+        "rxbytes": "$.rxbytes",
+        "txbytes": "$.txbytes",
+        "rxspeed": "$.rxspeed",
+        "txspeed": "$.txspeed"
+      }
+    },
+    {
+      "command": "interface stat",
+      "root" : "$",
+      "param" : {
+        "name" : "AccessPoint"
+      },
+      "tags" : {},
+      "values" : {
+        "rxbytes": "$.rxbytes",
+        "txbytes": "$.txbytes",
+        "rxspeed": "$.rxspeed",
+        "txspeed": "$.txspeed"
+      }
+    },
+    {
+      "command": "interface stat",
+      "root" : "$",
+      "param" : {
+        "name" : "AccessPoint_5G"
+      },
+      "tags" : {},
+      "values" : {
+        "rxbytes": "$.rxbytes",
+        "txbytes": "$.txbytes",
+        "rxspeed": "$.rxspeed",
+        "txspeed": "$.txspeed"
+      }
+    },
+    {
+      "command": "interface stat",
+      "root" : "$",
+      "param" : {
+        "name" : "GigabitEthernet0"
       },
       "tags" : {},
       "values" : {
