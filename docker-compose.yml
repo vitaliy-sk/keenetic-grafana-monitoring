@@ -7,6 +7,6 @@ services:
    # environment:
    #   - TZ=Europe/Kiev
     volumes:
-      - ./config/influx.json:/home/config/influx.json
-      - ./config/metrics.json:/home/config/metrics.json
+      - ./config/config.ini:/home/config/config.ini:ro
+      - ./config/metrics.json:/home/config/metrics.json:ro
     restart: always
