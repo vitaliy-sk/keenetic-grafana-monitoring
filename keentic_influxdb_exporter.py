@@ -1,14 +1,17 @@
 import configparser
 import json
+import logging
 import os
 import time
-
-from jsonpath_rw import parse
 from typing import Dict, List
 
+from jsonpath_rw import parse
+
 from influxdb_writter import InfuxWriter
-from keenetic_api import KeeneticClient
+from keenetic_api import KeeneticClient, KeeneticApiException
 from value_normalizer import normalize_value
+
+logging.basicConfig(level='INFO', format='%(asctime)s - %(filename)s - %(levelname)s - %(message)s')
 
 
 def json_path_init(paths: Dict[str, str]):
@@ -34,7 +37,12 @@ class KeeneticCollector(object):
         self._values = json_path_init(metric_configuration['values'])
 
     def collect(self) -> List[dict]:
-        response = self._keenetic_client.metric(self._command, self._params)
+        try:
+            response = self._keenetic_client.metric(self._command, self._params)
+        except KeeneticApiException as e:
+            logging.warning(f"Skipping metric '{self._command}' collection. Reason keenetic api exception, "
+                            f"status: {e.status_code}, response: {e.response_text}")
+            return []
 
         roots = self._root.find(response)
         metrics = []
@@ -85,8 +93,8 @@ class KeeneticCollector(object):
 
 
 if __name__ == '__main__':
-    print(
-        "  _  __                    _   _         _____      _ _           _             \n | |/ /                   | | (_)       / ____|    | | |         | |            \n | ' / ___  ___ _ __   ___| |_ _  ___  | |     ___ | | | ___  ___| |_ ___  _ __ \n |  < / _ \/ _ \ '_ \ / _ \ __| |/ __| | |    / _ \| | |/ _ \/ __| __/ _ \| '__|\n | . \  __/  __/ | | |  __/ |_| | (__  | |___| (_) | | |  __/ (__| || (_) | |   \n |_|\_\___|\___|_| |_|\___|\__|_|\___|  \_____\___/|_|_|\___|\___|\__\___/|_|   \n                                                                                \n                                                                                ")
+    logging.info("\n\n" +
+                 "  _  __                    _   _         _____      _ _           _             \n | |/ /                   | | (_)       / ____|    | | |         | |            \n | ' / ___  ___ _ __   ___| |_ _  ___  | |     ___ | | | ___  ___| |_ ___  _ __ \n |  < / _ \/ _ \ '_ \ / _ \ __| |/ __| | |    / _ \| | |/ _ \/ __| __/ _ \| '__|\n | . \  __/  __/ | | |  __/ |_| | (__  | |___| (_) | | |  __/ (__| || (_) | |   \n |_|\_\___|\___|_| |_|\___|\__|_|\___|  \_____\___/|_|_|\___|\___|\__\___/|_|   \n\n")
     pwd = os.path.dirname(os.path.realpath(__file__))
     metrics_configuration = json.load(open(pwd + "/config/metrics.json", "r"))
 
@@ -97,17 +105,17 @@ if __name__ == '__main__':
     infuxdb_writer = InfuxWriter(config['influxdb'])
 
     keenetic_config = config['keenetic']
-    print("Connecting to router: " + keenetic_config['admin_endpoint'])
+    logging.info("Connecting to router: " + keenetic_config['admin_endpoint'])
 
     collectors = []
     with KeeneticClient(keenetic_config['admin_endpoint'], keenetic_config.getboolean('skip_auth'),
                         keenetic_config['login'], keenetic_config['password']) as kc:
         for metric_configuration in metrics:
-            print("Configuring metric: " + metric_configuration['command'])
+            logging.info("Configuring metric: " + metric_configuration['command'])
             collectors.append(KeeneticCollector(kc, metric_configuration))
 
         wait_interval = config['collector'].getint('interval_sec')
-        print(f"Configuration done. Start collecting with interval: {wait_interval} sec")
+        logging.info(f"Configuration done. Start collecting with interval: {wait_interval} sec")
         while True:
             for collector in collectors:
                 metrics = collector.collect()

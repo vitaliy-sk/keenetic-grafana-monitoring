@@ -1,8 +1,8 @@
+import hashlib
+from hashlib import sha256
 from typing import Dict
 from urllib import parse
 
-import hashlib
-from hashlib import sha256
 from requests import Session
 
 
@@ -46,7 +46,15 @@ class KeeneticClient:
             url = f"{self._admin_endpoint}/rci/show/{command.replace(' ', '/')}" + "?" + parse.urlencode(
                 params)
             r = self._session.get(url)
-            response = r.json()
-            return response
+            if r.status_code == 200:
+                return r.json()
+            raise KeeneticApiException(r.status_code, r.text)
         else:
             raise ConnectionError(f"No keenetic connection.")
+
+
+class KeeneticApiException(Exception):
+
+    def __init__(self, status_code: int, response_text: str):
+        self.status_code = status_code
+        self.response_text = response_text

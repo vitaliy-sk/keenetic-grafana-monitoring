@@ -1,24 +1,32 @@
+import logging
 import re
 
 
 def isstring(value): return isinstance(value, str)
-def isfloat(value: str): return (re.match(r'^-?\d+(?:\.\d+)?$', value) is not None)
-def isinteger(value: str): return (re.match('^\d+$', value) is not None)
-def isvalidmetric(value) : return isinstance(value, int) or isinstance(value, float) or isinstance(value, bool)
+
+
+def isfloat(value: str): return re.match(r'^-?\d+(?:\.\d+)?$', value) is not None
+
+
+def isinteger(value: str): return re.match(r'^\d+$', value) is not None
+
+
+def isvalidmetric(value): return isinstance(value, int) or isinstance(value, float) or isinstance(value, bool)
+
 
 type_mapping = {
-    "yes" : 1,
-    "no" : 0,
-    "up" : 1,
-    "down" : 0,
+    "yes": 1,
+    "no": 0,
+    "up": 1,
+    "down": 0,
     True: 1,
     False: 0,
-    "MOUNTED" : 1,
-    "UNMOUNTED" : 0
+    "MOUNTED": 1,
+    "UNMOUNTED": 0
 }
 
-def normalize_value(value):
 
+def normalize_value(value):
     if value is None:
         return None
 
@@ -30,12 +38,11 @@ def normalize_value(value):
     if isvalidmetric(value):
         return value
     else:
-        print("WARN Value: " + str(value) + " is not valid metric type")
+        logging.warning("Value: " + str(value) + " is not valid metric type")
         return None
 
 
 def parse_string(value):
-
     value = remove_data_unit(value)
 
     if isinteger(value):
