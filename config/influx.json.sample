@@ -1,9 +1,0 @@
-{
-  "influxdb": {
-    "host": "<HOST>",
-    "port": 80,
-    "username": "admin",
-    "password": "<PASS>",
-    "db": "keenetic"
-  }
-}

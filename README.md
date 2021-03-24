@@ -12,29 +12,37 @@
 
 # Supporter router
 
-Tested with: Keenetic Ultra (KN-1810) KeeneticOS 3.5.6
+Tested with: 
+- Keenetic Ultra (KN-1810) KeeneticOS 3.5.6
+- Keenetic Giga (KN-1010) KeeneticOS 3.5.6
 
-May works on other Keenetic routers
+May work on other Keenetic routers
 
 # Preparation
 
-* Create InfluxDB configuration file `influx.json`
+* Create configuration file `config.ini`
 
-```json
-{
-  "influxdb": {
-    "host": "<HOST>",
-    "port": 80,
-    "username": "admin",
-    "password": "<PASS>",
-    "db": "keenetic"
-  }
-}
+```ini
+[influxdb]
+host=<HOST>
+port=80
+username=admin
+password=<INFLUX_PASS>
+db=keenetic
+[keenetic]
+skip_auth=false
+admin_endpoint=http://192.168.1.1:80
+login=admin
+password=<KEENETIC_PASS>
+[collector]
+interval_sec=30
 ```
 
 * Copy [metrics.json](https://github.com/vitaliy-sk/keenetic-grafana-monitoring/blob/master/config/metrics.json) and edit (Optional)
 
-* Expose Keenetic API on your router
+* Create admin user (Users and access -> Create user, allow 'Web interface' and 'Prohibit saving system settings') 
+
+* (Alternative to create user) Expose Keenetic API on your router
 
 For doing this add port forwarding (Network rules -> Forwarding):
 ```
@@ -44,6 +52,11 @@ Subnet mask: 255.255.255.0
 Output: This Keenetic
 Open the port: 79
 Destination port: 79 
+```
+Update `conifg.ini`
+```
+[keenetic]
+skip_auth=true
 ```
 
 * Import Grafana dashboard from [grafana.com](https://grafana.com/grafana/dashboards/12723)
@@ -81,8 +94,8 @@ services:
     # environment:
     #  - TZ=Europe/Kiev
     volumes:
-      - ./config/influx.json:/home/config/influx.json
-      - ./config/metrics.json:/home/config/metrics.json
+      - ./config/config.ini:/home/config/config.ini:ro
+      - ./config/metrics.json:/home/config/metrics.json:ro
     restart: always
 ```
 

@@ -1,10 +1,11 @@
-FROM python:3-slim
+FROM python:3.8-alpine AS dependencies
+COPY requirements.txt .
 
-ADD keentic_influxdb_exporter.py /home
-ADD requirements.txt /home
-ADD value_normalizer.py /home
-ADD influxdb_writter.py /home
-ADD config/metrics.json /home/config/metrics.json
+RUN pip install --no-cache-dir --user --no-warn-script-location -r requirements.txt
 
-RUN pip install -r /home/requirements.txt
+FROM python:3.8-alpine AS build-image
+COPY --from=dependencies /root/.local /root/.local
+
+COPY value_normalizer.py keentic_influxdb_exporter.py influxdb_writter.py keenetic_api.py /home/
+
 CMD [ "python", "-u", "/home/keentic_influxdb_exporter.py" ]

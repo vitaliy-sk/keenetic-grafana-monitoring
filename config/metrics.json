@@ -1,6 +1,4 @@
 {
-  "endpoint" : "http://192.168.1.1:79/rci",
-  "interval_sec" : 30,
   "metrics" : [
     {
       "command": "processes",
