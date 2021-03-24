@@ -89,7 +89,7 @@ nohup python /opt/home/keenetic-grafana-monitoring/keentic_influxdb_exporter.py 
 version: '3.7'
 services:
   keenetic-grafana-monitoring:
-    image: techh/keenetic-grafana-monitoring:1.1
+    image: techh/keenetic-grafana-monitoring:1.1.0
     container_name: keenetic-grafana-monitoring
     # environment:
     #  - TZ=Europe/Kiev
