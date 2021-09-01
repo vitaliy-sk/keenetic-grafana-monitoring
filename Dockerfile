@@ -7,5 +7,6 @@ FROM python:3.8-alpine AS build-image
 COPY --from=dependencies /root/.local /root/.local
 
 COPY value_normalizer.py keentic_influxdb_exporter.py influxdb_writter.py keenetic_api.py /home/
+COPY config/metrics.json /home/config/metrics.json
 
 CMD [ "python", "-u", "/home/keentic_influxdb_exporter.py" ]
