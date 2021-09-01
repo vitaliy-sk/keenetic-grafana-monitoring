@@ -52,18 +52,6 @@
       }
     },
     {
-      "command": "ip nat",
-      "root" : "$.[*]",
-      "tags" : {
-        "src" : "$.src",
-        "dst" : "$.dst"
-      },
-      "values" : {
-        "bytes-in": "$.bytes",
-        "bytes-out": "$.bytes-out"
-      }
-    },
-    {
       "command": "system",
       "root" : "$",
       "tags" : {
@@ -173,6 +161,24 @@
         "txbytes": "$.txbytes",
         "rxspeed": "$.rxspeed",
         "txspeed": "$.txspeed"
+      }
+    },
+    {
+      "command": "ntce hosts",
+      "root" : "$.host[*].application[*]",
+      "tags" : {
+        "group-long" : "$.group-long",
+        "groupset-long-id" : "$.groupset-long-id",
+        "long" : "$.long",
+        "short": "$.short",
+
+        "name": "`parent`.`parent`.host.name",
+        "ip": "`parent`.`parent`.host.ip",
+        "hostname": "`parent`.`parent`.host.hostname"
+      },
+      "values" : {
+        "rxbytes": "$.rxbytes",
+        "txbytes": "$.txbytes"
       }
     }
   ]

@@ -55,6 +55,9 @@ class KeeneticCollector(object):
             for tagName, tagPath in self._tags.items():
                 if tagPath == '~':
                     tags[tagName] = root.path.fields[0]
+                elif str(tagPath).startswith('`parent`'):
+                    full_path = root.full_path.child(tagPath)
+                    tags[tagName] = self.get_first_value(full_path.find(response))
                 else:
                     tags[tagName] = self.get_first_value(tagPath.find(root.value))
 
