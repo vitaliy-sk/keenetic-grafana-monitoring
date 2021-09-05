@@ -164,21 +164,22 @@
       }
     },
     {
-      "command": "ntce hosts",
-      "root" : "$.host[*].application[*]",
+      "command": "ntce summary",
+      "root" : "$.application[*]",
+      "param" : {
+        "application" : "true",
+        "attrib" : "sumbytes",
+        "detail" : "1"
+      },
       "tags" : {
-        "group-long" : "$.group-long",
-        "groupset-long-id" : "$.groupset-long-id",
         "long" : "$.long",
         "short": "$.short",
-
-        "name": "`parent`.`parent`.host.name",
-        "ip": "`parent`.`parent`.host.ip",
-        "hostname": "`parent`.`parent`.host.hostname"
+        "group-long" : "$.group-long",
+        "groupset-long-id" : "$.groupset-long-id",
+        "groupset-short-id" : "$.groupset-short-id"
       },
       "values" : {
-        "rxbytes": "$.rxbytes",
-        "txbytes": "$.txbytes"
+        "sumbytes": "$.sumbytes"
       }
     }
   ]
