@@ -162,25 +162,6 @@
         "rxspeed": "$.rxspeed",
         "txspeed": "$.txspeed"
       }
-    },
-    {
-      "command": "ntce summary",
-      "root" : "$.application[*]",
-      "param" : {
-        "application" : "true",
-        "attrib" : "sumbytes",
-        "detail" : "1"
-      },
-      "tags" : {
-        "long" : "$.long",
-        "short": "$.short",
-        "group-long" : "$.group-long",
-        "groupset-long-id" : "$.groupset-long-id",
-        "groupset-short-id" : "$.groupset-short-id"
-      },
-      "values" : {
-        "sumbytes": "$.sumbytes"
-      }
     }
   ]
 }
