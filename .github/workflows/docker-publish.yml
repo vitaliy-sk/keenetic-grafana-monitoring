@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'master'
+      - 'candidate'
   release:
     types: [ published ]
 
