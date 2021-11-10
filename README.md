@@ -20,7 +20,7 @@ May work on other Keenetic routers
 
 # Supported InfluxDB version
 
-InfluxDB 2.x (recomended) and InfluxDB 1.8+
+InfluxDB 2.x (recommended) and InfluxDB 1.8+
 
 # Preparation
 
@@ -72,24 +72,7 @@ skip_auth=true
 
 There are two options, you can run collector directly on the router or in Docker on separate host.
 
-## Run on router
-
-* Copy repository content to your router `/opt/home/keenetic-grafana-monitoring`
-* Install Python `opkg install python3 python3-pip`
-* Install dependencies ` pip install -r requirements.txt`
-* Create script for autorun `/opt/etc/init.d/S99keeneticgrafana`
-
-```$bash
-#!/bin/sh
-
-[ "$1" != "start" ] && exit 0
-
-nohup python /opt/home/keenetic-grafana-monitoring/keentic_influxdb_exporter.py >/dev/null 2>&1 &
-```
-
-* Run `/opt/etc/init.d/S99keeneticgrafana start`
-
-## Run on Docker
+## Run in Docker on seprate host (recommended)
 
 ```
 ---
@@ -125,6 +108,23 @@ services:
       - DOCKER_INFLUXDB_INIT_USERNAME=admin
       - DOCKER_INFLUXDB_INIT_PASSWORD=password
 ```
+
+## Run on router
+
+* Copy repository content to your router `/opt/home/keenetic-grafana-monitoring`
+* Install Python `opkg install python3 python3-pip`
+* Install dependencies ` pip install -r requirements.txt`
+* Create script for autorun `/opt/etc/init.d/S99keeneticgrafana`
+
+```$bash
+#!/bin/sh
+
+[ "$1" != "start" ] && exit 0
+
+nohup python /opt/home/keenetic-grafana-monitoring/keentic_influxdb_exporter.py >/dev/null 2>&1 &
+```
+
+* Run `/opt/etc/init.d/S99keeneticgrafana start`
 
 # Build Docker image
 
