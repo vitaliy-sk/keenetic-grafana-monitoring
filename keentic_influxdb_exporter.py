@@ -4,7 +4,6 @@ import logging
 import os
 import time
 from typing import Dict, List
-from influxdb_client.client.write.point import Point
 
 from jsonpath_rw import parse
 
@@ -81,12 +80,12 @@ class KeeneticCollector(object):
 
     @staticmethod
     def create_metric(measurement, tags, values):
-        return Point.from_dict({
+        return {
             "measurement": measurement,
             "tags": tags,
             "time": time.time_ns(),
             "fields": values
-        }) 
+        }
 
     @staticmethod
     def get_first_value(array):
