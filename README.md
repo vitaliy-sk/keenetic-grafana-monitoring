@@ -18,22 +18,29 @@ Tested with:
 
 May work on other Keenetic routers
 
+# Supported InfluxDB version
+
+InfluxDB 2.x (recomended) and InfluxDB 1.8+
+
 # Preparation
 
 * Create configuration file `config.ini`
 
 ```ini
-[influxdb]
-host=<HOST>
-port=80
-username=admin
-password=<INFLUX_PASS>
-db=keenetic
+[influx2]
+url=http://localhost:8086
+# For influx v1.x please use "-" as a value
+org=keenetic
+# For influx v1.x please use "username:password" as a token
+token=<token>
+timeout=6000
+# For influx v1.x DB name
+bucket=keenetic
 [keenetic]
+admin_endpoint=http://<keenetic_ip>:80
 skip_auth=false
-admin_endpoint=http://192.168.1.1:80
-login=admin
-password=<KEENETIC_PASS>
+login=<user>
+password=<pass>
 [collector]
 interval_sec=30
 ```
@@ -87,9 +94,11 @@ nohup python /opt/home/keenetic-grafana-monitoring/keentic_influxdb_exporter.py 
 ```
 ---
 version: '3.7'
+
 services:
+
   keenetic-grafana-monitoring:
-    image: techh/keenetic-grafana-monitoring:1.1.1
+    image: techh/keenetic-grafana-monitoring:2.0.0
     container_name: keenetic-grafana-monitoring
     # environment:
     #  - TZ=Europe/Kiev
@@ -98,6 +107,23 @@ services:
       # Optionally you can override metrics
       - ./config/metrics.json:/home/config/metrics.json:ro
     restart: always
+  
+  # Influx 2.x
+
+  influxdb:
+    image: 'influxdb:2.1'
+    volumes:
+      - ./_data/influxdb:/var/lib/influxdb
+    ports: 
+      - 8086:8086
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_ORG=keenetic
+      - DOCKER_INFLUXDB_INIT_BUCKET=keenetic
+      - DOCKER_INFLUXDB_INIT_RETENTION=52w
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=admin_token
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=password
 ```
 
 # Build Docker image

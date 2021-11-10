@@ -4,6 +4,7 @@ import logging
 import os
 import time
 from typing import Dict, List
+from influxdb_client.client.write.point import Point
 
 from jsonpath_rw import parse
 
@@ -80,12 +81,12 @@ class KeeneticCollector(object):
 
     @staticmethod
     def create_metric(measurement, tags, values):
-        return {
+        return Point.from_dict({
             "measurement": measurement,
             "tags": tags,
             "time": time.time_ns(),
             "fields": values
-        }
+        }) 
 
     @staticmethod
     def get_first_value(array):
@@ -104,8 +105,10 @@ if __name__ == '__main__':
     metrics = metrics_configuration['metrics']
 
     config = configparser.ConfigParser(interpolation=None)
-    config.read(pwd + "/config/config.ini")
-    infuxdb_writer = InfuxWriter(config['influxdb'])
+    config_path = pwd + "/config/config.ini"
+    config.read(config_path)
+    
+    infuxdb_writer = InfuxWriter(config['influx2'], config_path)
 
     keenetic_config = config['keenetic']
     logging.info("Connecting to router: " + keenetic_config['admin_endpoint'])

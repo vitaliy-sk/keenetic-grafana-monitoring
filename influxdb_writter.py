@@ -1,27 +1,18 @@
 import logging
 
 import requests
-from influxdb import InfluxDBClient
 
+from influxdb_client import InfluxDBClient
+from influxdb_client.client.write_api import SYNCHRONOUS
 
 class InfuxWriter(object):
 
-    def __init__(self, configuration):
+    def __init__(self, configuration, configuration_file):
         requests.packages.urllib3.disable_warnings()
         self._configuration = configuration
-        self._client = InfluxDBClient(self._configuration['host'], self._configuration['port'],
-                                      self._configuration['username'], self._configuration['password'],
-                                      self._configuration['db'])
-        self.init_database()
-
-    def init_database(self):
-        logging.info("Connecting to InfluxDB: " + self._configuration['host'])
-        db_name = self._configuration['db']
-        # self._client.drop_database(db_name)
-
-        if db_name not in self._client.get_list_database():
-            logging.info("Creating InfluxDB database: " + db_name)
-            self._client.create_database(db_name)
+        self._client = InfluxDBClient.from_config_file(configuration_file)
+        self._write_api = self._client.write_api(write_options=SYNCHRONOUS)
+        logging.info("Connecting to InfluxDB: " + self._configuration['url'])
 
     def write_metrics(self, metrics):
-        self._client.write_points(metrics)
+        self._write_api.write(bucket=self._configuration['bucket'], record=metrics)
