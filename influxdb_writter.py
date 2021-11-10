@@ -15,4 +15,4 @@ class InfuxWriter(object):
         logging.info("Connecting to InfluxDB: " + self._configuration['url'])
 
     def write_metrics(self, metrics):
-        self._write_api.write(bucket=self._configuration['bucket'], record=metrics)
+        self._write_api.write(bucket=self._configuration['bucket'], org=self._configuration['org'], record=metrics)
