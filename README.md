@@ -10,17 +10,17 @@
 
 ![Example](https://user-images.githubusercontent.com/2773025/88829802-c5809900-d1d5-11ea-8cbe-de41118387b3.png)
 
-# Supporter router
+# Supporter routers
 
-Tested with: 
-- Keenetic Ultra (KN-1810) KeeneticOS 3.5.6
-- Keenetic Giga (KN-1010) KeeneticOS 3.5.6
-
-May work on other Keenetic routers
+Tested with KeeneticOS 3.5+
 
 # Supported InfluxDB version
 
 InfluxDB 2.x (recommended) and InfluxDB 1.8+
+
+# InfluxDB 2.x / keenetic-grafana-monitoring 2.x migration manual
+
+See on [wiki](https://github.com/vitaliy-sk/keenetic-grafana-monitoring/wiki/How-to-migrate-to-keenetic-grafana-monitoring-v2-and-Influx-v2)
 
 # Preparation
 
