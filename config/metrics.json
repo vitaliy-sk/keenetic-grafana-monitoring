@@ -2,10 +2,9 @@
   "metrics" : [
     {
       "command": "processes",
-      "root" : "$.process.*",
+      "root" : "$.process.[*]",
       "tags" : {
-        "name": "~",
-        "process_name" : "$.name",
+        "name": "$.comm",
         "pid": "$.pid"
       },
       "values" : {
