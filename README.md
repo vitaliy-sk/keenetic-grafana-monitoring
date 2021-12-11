@@ -10,7 +10,7 @@
 
 ![Example](https://user-images.githubusercontent.com/2773025/88829802-c5809900-d1d5-11ea-8cbe-de41118387b3.png)
 
-# Supporter routers
+# Supported routers
 
 Tested with KeeneticOS 3.5+
 
@@ -81,7 +81,7 @@ version: '3.7'
 services:
 
   keenetic-grafana-monitoring:
-    image: techh/keenetic-grafana-monitoring:2.0.0
+    image: techh/keenetic-grafana-monitoring:2.0.1
     container_name: keenetic-grafana-monitoring
     # environment:
     #  - TZ=Europe/Kiev
