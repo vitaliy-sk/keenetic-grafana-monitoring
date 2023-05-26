@@ -9,6 +9,7 @@
       "pluginName": "InfluxDB"
     }
   ],
+  "__elements": {},
   "__requires": [
     {
       "type": "panel",
@@ -20,12 +21,12 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "7.4.3"
+      "version": "10.0.0-cloud.2.aef9c3bd"
     },
     {
       "type": "panel",
       "id": "graph",
-      "name": "Graph",
+      "name": "Graph (old)",
       "version": ""
     },
     {
@@ -51,26 +52,38 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
   "editable": true,
-  "gnetId": null,
+  "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
-      "datasource": "${DS_INFLUXDB_KEENETIC}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB_KEENETIC}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -106,10 +119,14 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.4.3",
+      "pluginVersion": "10.0.0-cloud.2.aef9c3bd",
       "targets": [
         {
           "alias": "Ethernet Clients",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_KEENETIC}"
+          },
           "groupBy": [
             {
               "params": [
@@ -155,6 +172,10 @@
         },
         {
           "alias": "Wi-Fi Clients",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_KEENETIC}"
+          },
           "groupBy": [
             {
               "params": [
@@ -193,16 +214,16 @@
           "tags": []
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Clients",
       "type": "stat"
     },
     {
-      "datasource": "${DS_INFLUXDB_KEENETIC}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB_KEENETIC}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "decimals": 1,
           "mappings": [],
           "thresholds": {
@@ -240,9 +261,13 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.4.3",
+      "pluginVersion": "10.0.0-cloud.2.aef9c3bd",
       "targets": [
         {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_KEENETIC}"
+          },
           "groupBy": [
             {
               "params": [
@@ -281,16 +306,16 @@
           "tags": []
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Uptime",
       "type": "stat"
     },
     {
-      "datasource": "${DS_INFLUXDB_KEENETIC}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB_KEENETIC}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "mappings": [],
           "thresholds": {
             "mode": "percentage",
@@ -338,6 +363,42 @@
                 "value": 100
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Temperature"
+            },
+            "properties": [
+              {
+                "id": "max",
+                "value": 120
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "orange",
+                      "value": 70
+                    },
+                    {
+                      "color": "semi-dark-red",
+                      "value": 90
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "unit",
+                "value": "celsius"
+              }
+            ]
           }
         ]
       },
@@ -361,10 +422,14 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "7.4.3",
+      "pluginVersion": "10.0.0-cloud.2.aef9c3bd",
       "targets": [
         {
           "alias": "$col",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_KEENETIC}"
+          },
           "groupBy": [
             {
               "params": [
@@ -403,6 +468,10 @@
         },
         {
           "alias": "$col",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_KEENETIC}"
+          },
           "groupBy": [
             {
               "params": [
@@ -438,37 +507,42 @@
             ]
           ],
           "tags": []
+        },
+        {
+          "alias": "$col",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_KEENETIC}"
+          },
+          "hide": false,
+          "query": "SELECT(last(\"temperature\")) as \"Temperature\" FROM \"interface\" WHERE $timeFilter GROUP BY time($__interval) fill(null)",
+          "rawQuery": true,
+          "refId": "C",
+          "resultFormat": "time_series"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Average system usage",
       "type": "gauge"
     },
     {
-      "datasource": "${DS_INFLUXDB_KEENETIC}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB_KEENETIC}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "decimals": 0,
           "mappings": [
             {
-              "from": "",
-              "id": 0,
-              "operator": "",
-              "text": "OK",
-              "to": "",
-              "type": 1,
-              "value": "1"
-            },
-            {
-              "from": "",
-              "id": 1,
-              "operator": "",
-              "text": "Fail",
-              "to": "",
-              "type": 1,
-              "value": "0"
+              "options": {
+                "0": {
+                  "text": "Fail"
+                },
+                "1": {
+                  "text": "OK"
+                }
+              },
+              "type": "value"
             }
           ],
           "max": 1,
@@ -513,10 +587,14 @@
         "showThresholdMarkers": false,
         "text": {}
       },
-      "pluginVersion": "7.4.3",
+      "pluginVersion": "10.0.0-cloud.2.aef9c3bd",
       "targets": [
         {
           "alias": "$col",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_KEENETIC}"
+          },
           "groupBy": [
             {
               "params": [
@@ -555,8 +633,6 @@
           "tags": []
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Internet status",
       "type": "gauge"
     },
@@ -565,11 +641,13 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_INFLUXDB_KEENETIC}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB_KEENETIC}"
+      },
       "decimals": 2,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -604,7 +682,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.3",
+      "pluginVersion": "10.0.0-cloud.2.aef9c3bd",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -615,6 +693,10 @@
       "targets": [
         {
           "alias": "Upload - $tag_name",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_KEENETIC}"
+          },
           "groupBy": [
             {
               "params": [
@@ -664,6 +746,10 @@
         },
         {
           "alias": "Download - $tag_name",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_KEENETIC}"
+          },
           "groupBy": [
             {
               "params": [
@@ -702,9 +788,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Interfaces data transfered",
       "tooltip": {
         "shared": true,
@@ -713,35 +797,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "bytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
-          "decimals": null,
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -749,11 +822,13 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_INFLUXDB_KEENETIC}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB_KEENETIC}"
+      },
       "decimals": 2,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -788,7 +863,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.3",
+      "pluginVersion": "10.0.0-cloud.2.aef9c3bd",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -799,6 +874,10 @@
       "targets": [
         {
           "alias": "Upload - $tag_name",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_KEENETIC}"
+          },
           "groupBy": [
             {
               "params": [
@@ -848,6 +927,10 @@
         },
         {
           "alias": "Download - $tag_name",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_KEENETIC}"
+          },
           "groupBy": [
             {
               "params": [
@@ -886,9 +969,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Interfaces rate",
       "tooltip": {
         "shared": true,
@@ -897,35 +978,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "Bps",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
-          "decimals": null,
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -933,11 +1003,13 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_INFLUXDB_KEENETIC}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB_KEENETIC}"
+      },
       "decimals": 2,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -972,7 +1044,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.3",
+      "pluginVersion": "10.0.0-cloud.2.aef9c3bd",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -983,6 +1055,10 @@
       "targets": [
         {
           "alias": "$tag_name",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_KEENETIC}"
+          },
           "groupBy": [
             {
               "params": [
@@ -1054,9 +1130,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Data usage",
       "tooltip": {
         "shared": true,
@@ -1065,33 +1139,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "bytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1099,10 +1164,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_INFLUXDB_KEENETIC}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB_KEENETIC}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -1116,275 +1183,6 @@
         "y": 13
       },
       "hiddenSeries": false,
-      "id": 7,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.4.3",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "alias": "NAT Sessions",
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "none"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "ip nat",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "bytes-in"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "count"
-              }
-            ]
-          ],
-          "tags": []
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "NAT Sessions",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "decimals": 0,
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "decimals": 0,
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "${DS_INFLUXDB_KEENETIC}",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "links": []
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 21
-      },
-      "hiddenSeries": false,
-      "id": 5,
-      "interval": "",
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": false,
-        "max": false,
-        "min": false,
-        "rightSide": true,
-        "show": true,
-        "sort": "current",
-        "sortDesc": true,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.4.3",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "alias": "$tag_name [$tag_mode]",
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "name"
-              ],
-              "type": "tag"
-            },
-            {
-              "params": [
-                "none"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "ip hotspot",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT mean(\"txrate\") FROM \"ip hotspot\" WHERE $timeFilter AND \"active\" = 1 AND \"mode\" != \"\" GROUP BY time($__interval), \"name\", \"mode\" fill(null)",
-          "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "txrate"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": []
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Wi-Fi Clients TX Rate",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "Mbits",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "${DS_INFLUXDB_KEENETIC}",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "links": []
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 21
-      },
-      "hiddenSeries": false,
       "id": 2,
       "interval": "",
       "legend": {
@@ -1395,8 +1193,6 @@
         "min": false,
         "rightSide": true,
         "show": true,
-        "sort": null,
-        "sortDesc": null,
         "total": false,
         "values": true
       },
@@ -1407,7 +1203,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.3",
+      "pluginVersion": "10.0.0-cloud.2.aef9c3bd",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1418,6 +1214,10 @@
       "targets": [
         {
           "alias": "$tag_name [$tag_mode]",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_KEENETIC}"
+          },
           "groupBy": [
             {
               "params": [
@@ -1463,9 +1263,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Wi-Fi Clients signal level",
       "tooltip": {
         "shared": true,
@@ -1474,33 +1272,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "dBm",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1508,10 +1297,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_INFLUXDB_KEENETIC}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB_KEENETIC}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -1522,17 +1313,21 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 29
+        "y": 21
       },
       "hiddenSeries": false,
-      "id": 20,
+      "id": 5,
+      "interval": "",
       "legend": {
+        "alignAsTable": true,
         "avg": true,
         "current": false,
         "max": false,
         "min": false,
-        "rightSide": false,
+        "rightSide": true,
         "show": true,
+        "sort": "current",
+        "sortDesc": true,
         "total": false,
         "values": true
       },
@@ -1543,7 +1338,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.3",
+      "pluginVersion": "10.0.0-cloud.2.aef9c3bd",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1553,7 +1348,11 @@
       "steppedLine": false,
       "targets": [
         {
-          "alias": "CPU Load",
+          "alias": "$tag_name [$tag_mode]",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_KEENETIC}"
+          },
           "groupBy": [
             {
               "params": [
@@ -1563,21 +1362,29 @@
             },
             {
               "params": [
-                "null"
+                "name"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "none"
               ],
               "type": "fill"
             }
           ],
-          "measurement": "system",
+          "measurement": "ip hotspot",
           "orderByTime": "ASC",
           "policy": "default",
+          "query": "SELECT mean(\"txrate\") FROM \"ip hotspot\" WHERE $timeFilter AND \"active\" = 1 AND \"mode\" != \"\" GROUP BY time($__interval), \"name\", \"mode\" fill(null)",
+          "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
             [
               {
                 "params": [
-                  "cpuload"
+                  "txrate"
                 ],
                 "type": "field"
               },
@@ -1591,10 +1398,8 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
-      "title": "CPU Load",
+      "title": "Wi-Fi Clients TX Rate",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1602,33 +1407,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "format": "percent",
-          "label": null,
+          "format": "Mbits",
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1638,10 +1434,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_INFLUXDB_KEENETIC}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB_KEENETIC}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -1652,7 +1450,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 29
+        "y": 21
       },
       "hiddenSeries": false,
       "id": 21,
@@ -1674,7 +1472,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.3",
+      "pluginVersion": "10.0.0-cloud.2.aef9c3bd",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1685,6 +1483,10 @@
       "targets": [
         {
           "alias": "RAM Usage",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_KEENETIC}"
+          },
           "groupBy": [
             {
               "params": [
@@ -1724,9 +1526,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "RAM Usage",
       "tooltip": {
         "shared": true,
@@ -1735,16 +1535,13 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "deckbytes",
-          "label": null,
           "logBase": 1,
           "max": "256000",
           "min": "0",
@@ -1752,16 +1549,12 @@
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1769,10 +1562,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_INFLUXDB_KEENETIC}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB_KEENETIC}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -1783,20 +1578,17 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 37
+        "y": 29
       },
       "hiddenSeries": false,
-      "id": 30,
+      "id": 20,
       "legend": {
-        "alignAsTable": true,
         "avg": true,
         "current": false,
         "max": false,
         "min": false,
-        "rightSide": true,
+        "rightSide": false,
         "show": true,
-        "sort": "avg",
-        "sortDesc": true,
         "total": false,
         "values": true
       },
@@ -1807,7 +1599,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.3",
+      "pluginVersion": "10.0.0-cloud.2.aef9c3bd",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1817,7 +1609,11 @@
       "steppedLine": false,
       "targets": [
         {
-          "alias": "$tag_command",
+          "alias": "CPU Load",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_KEENETIC}"
+          },
           "groupBy": [
             {
               "params": [
@@ -1827,18 +1623,12 @@
             },
             {
               "params": [
-                "command"
-              ],
-              "type": "tag"
-            },
-            {
-              "params": [
-                "none"
+                "null"
               ],
               "type": "fill"
             }
           ],
-          "measurement": "collector",
+          "measurement": "system",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -1847,7 +1637,7 @@
             [
               {
                 "params": [
-                  "duration"
+                  "cpuload"
                 ],
                 "type": "field"
               },
@@ -1861,10 +1651,8 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
-      "title": "Scrape duration",
+      "title": "CPU Load",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1872,34 +1660,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": 2,
-          "format": "ns",
-          "label": null,
+          "format": "percent",
           "logBase": 1,
-          "max": null,
-          "min": "0",
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1907,10 +1685,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_INFLUXDB_KEENETIC}",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB_KEENETIC}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -1921,7 +1701,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 37
+        "y": 29
       },
       "hiddenSeries": false,
       "id": 16,
@@ -1943,7 +1723,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.3",
+      "pluginVersion": "10.0.0-cloud.2.aef9c3bd",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1954,6 +1734,10 @@
       "targets": [
         {
           "alias": "$tag_label",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_KEENETIC}"
+          },
           "groupBy": [
             {
               "params": [
@@ -2003,9 +1787,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Free media space",
       "tooltip": {
         "shared": true,
@@ -2014,9 +1796,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -2024,33 +1804,340 @@
         {
           "decimals": 2,
           "format": "bytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
-      "datasource": "${DS_INFLUXDB_KEENETIC}",
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB_KEENETIC}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 37
+      },
+      "hiddenSeries": false,
+      "id": 30,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": true,
+        "show": true,
+        "sort": "avg",
+        "sortDesc": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "10.0.0-cloud.2.aef9c3bd",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "$tag_command",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_KEENETIC}"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "command"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "none"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "collector",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "duration"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Scrape duration",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "decimals": 2,
+          "format": "ns",
+          "logBase": 1,
+          "min": "0",
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB_KEENETIC}"
+      },
       "fieldConfig": {
         "defaults": {
           "custom": {
-            "align": null,
-            "filterable": false
+            "align": "auto",
+            "cellOptions": {
+              "mode": "gradient",
+              "type": "color-background"
+            },
+            "filterable": false,
+            "inspect": false
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "text": "Down"
+                },
+                "1": {
+                  "text": "Up"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 178
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "id"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 329
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "description"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 300
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 19,
+        "w": 12,
+        "x": 12,
+        "y": 37
+      },
+      "id": 27,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "State"
+          }
+        ]
+      },
+      "pluginVersion": "10.0.0-cloud.2.aef9c3bd",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_KEENETIC}"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "interface-name"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "address"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "description"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "state"
+              ],
+              "type": "tag"
+            }
+          ],
+          "measurement": "interface",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT last(\"state\") as \"State\" FROM \"interface\" WHERE $timeFilter AND \"description\" != '' GROUP BY \"description\"",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "table",
+          "select": [
+            [
+              {
+                "params": [
+                  "uptime"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "title": "Interfaces",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB_KEENETIC}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": false,
+            "inspect": false
           },
           "decimals": 2,
           "mappings": [],
@@ -2123,6 +2210,15 @@
       },
       "id": 9,
       "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
         "frameIndex": 3,
         "showHeader": true,
         "sortBy": [
@@ -2132,9 +2228,13 @@
           }
         ]
       },
-      "pluginVersion": "7.4.3",
+      "pluginVersion": "10.0.0-cloud.2.aef9c3bd",
       "targets": [
         {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB_KEENETIC}"
+          },
           "groupBy": [
             {
               "params": [
@@ -2191,175 +2291,12 @@
           "tags": []
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Processes",
-      "type": "table"
-    },
-    {
-      "datasource": "${DS_INFLUXDB_KEENETIC}",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": null,
-            "displayMode": "color-background",
-            "filterable": false
-          },
-          "mappings": [
-            {
-              "from": "",
-              "id": 0,
-              "operator": "",
-              "text": "Up",
-              "to": "",
-              "type": 1,
-              "value": "1"
-            },
-            {
-              "from": "",
-              "id": 1,
-              "operator": "",
-              "text": "Down",
-              "to": "",
-              "type": 1,
-              "value": "0"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 0
-              },
-              {
-                "color": "green",
-                "value": 1
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Time"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 178
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "id"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 329
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "description"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 300
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 14,
-        "w": 12,
-        "x": 12,
-        "y": 45
-      },
-      "id": 27,
-      "options": {
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "State"
-          }
-        ]
-      },
-      "pluginVersion": "7.4.3",
-      "targets": [
-        {
-          "groupBy": [
-            {
-              "params": [
-                "interface-name"
-              ],
-              "type": "tag"
-            },
-            {
-              "params": [
-                "address"
-              ],
-              "type": "tag"
-            },
-            {
-              "params": [
-                "description"
-              ],
-              "type": "tag"
-            },
-            {
-              "params": [
-                "state"
-              ],
-              "type": "tag"
-            }
-          ],
-          "measurement": "interface",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT last(\"state\") as \"State\" FROM \"interface\" WHERE $timeFilter AND \"description\" != '' GROUP BY \"description\"",
-          "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "table",
-          "select": [
-            [
-              {
-                "params": [
-                  "uptime"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "last"
-              }
-            ]
-          ],
-          "tags": []
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Interfaces",
       "type": "table"
     }
   ],
-  "refresh": false,
-  "schemaVersion": 27,
+  "refresh": "",
+  "schemaVersion": 38,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -2385,5 +2322,6 @@
   "timezone": "",
   "title": "Keenetic",
   "uid": "rufORtVGk",
-  "version": 87
+  "version": 112,
+  "weekStart": ""
 }
