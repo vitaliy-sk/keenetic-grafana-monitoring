@@ -1,29 +1,40 @@
 {
-  "metrics" : [
+  "metrics": [
     {
       "command": "processes",
-      "root" : "$.process.[*]",
-      "tags" : {
+      "root": "$.process.[*]",
+      "tags": {
         "name": "$.comm",
         "pid": "$.pid"
       },
-      "values" : {
+      "values": {
         "cpu": "$.statistics.cpu.cur",
         "memory": "$.vm-size"
       }
     },
     {
+      "command": "interface",
+      "root": "$",
+      "param": {
+        "name": "WifiMaster0"
+      },
+      "tags": {},
+      "values": {
+        "temperature": "$.temperature"
+      }
+    },
+    {
       "command": "ip hotspot",
-      "root" : "$.host[*]",
-      "tags" : {
-        "hostname" : "$.hostname",
-        "name" : "$.name",
+      "root": "$.host[*]",
+      "tags": {
+        "hostname": "$.hostname",
+        "name": "$.name",
         "ssid": "$.ssid",
         "mode": "$.mode",
         "ip": "$.ip",
         "mac": "$.mac"
       },
-      "values" : {
+      "values": {
         "rxbytes": "$.rxbytes",
         "txbytes": "$.txbytes",
         "txrate": "$.txrate",
@@ -35,15 +46,15 @@
     },
     {
       "command": "interface",
-      "root" : "$.*",
-      "tags" : {
+      "root": "$.*",
+      "tags": {
         "id": "$.id",
         "type": "$.type",
         "description": "$.description",
         "interface-name": "$.interface-name",
         "address": "$.address"
       },
-      "values" : {
+      "values": {
         "mtu": "$.mtu",
         "uptime": "$.uptime",
         "tx-queue": "$.tx-queue",
@@ -52,11 +63,11 @@
     },
     {
       "command": "system",
-      "root" : "$",
-      "tags" : {
-        "hostname" : "$.hostname"
+      "root": "$",
+      "tags": {
+        "hostname": "$.hostname"
       },
-      "values" : {
+      "values": {
         "cpuload": "$.cpuload",
         "memtotal": "$.memtotal",
         "memfree": "$.memfree",
@@ -69,9 +80,9 @@
     },
     {
       "command": "internet status",
-      "root" : "$",
-      "tags" : {},
-      "values" : {
+      "root": "$",
+      "tags": {},
+      "values": {
         "internet": "$.internet",
         "gateway-accessible": "$.gateway-accessible",
         "dns-accessible": "$.dns-accessible",
@@ -81,25 +92,25 @@
     },
     {
       "command": "media",
-      "root" : "$.*.partition.[*]",
-      "tags" : {
-        "label" : "$.label",
-        "uuid" : "$.uuid"
+      "root": "$.*.partition.[*]",
+      "tags": {
+        "label": "$.label",
+        "uuid": "$.uuid"
       },
-      "values" : {
+      "values": {
         "total": "$.total",
         "free": "$.free",
-        "state" : "$.state"
+        "state": "$.state"
       }
     },
     {
       "command": "interface stat",
-      "root" : "$",
-      "param" : {
-        "name" : "ISP"
+      "root": "$",
+      "param": {
+        "name": "ISP"
       },
-      "tags" : {},
-      "values" : {
+      "tags": {},
+      "values": {
         "rxbytes": "$.rxbytes",
         "txbytes": "$.txbytes",
         "rxspeed": "$.rxspeed",
@@ -108,12 +119,12 @@
     },
     {
       "command": "interface stat",
-      "root" : "$",
-      "param" : {
-        "name" : "AccessPoint"
+      "root": "$",
+      "param": {
+        "name": "AccessPoint"
       },
-      "tags" : {},
-      "values" : {
+      "tags": {},
+      "values": {
         "rxbytes": "$.rxbytes",
         "txbytes": "$.txbytes",
         "rxspeed": "$.rxspeed",
@@ -122,12 +133,12 @@
     },
     {
       "command": "interface stat",
-      "root" : "$",
-      "param" : {
-        "name" : "AccessPoint_5G"
+      "root": "$",
+      "param": {
+        "name": "AccessPoint_5G"
       },
-      "tags" : {},
-      "values" : {
+      "tags": {},
+      "values": {
         "rxbytes": "$.rxbytes",
         "txbytes": "$.txbytes",
         "rxspeed": "$.rxspeed",
@@ -136,12 +147,12 @@
     },
     {
       "command": "interface stat",
-      "root" : "$",
-      "param" : {
-        "name" : "GigabitEthernet0"
+      "root": "$",
+      "param": {
+        "name": "GigabitEthernet0"
       },
-      "tags" : {},
-      "values" : {
+      "tags": {},
+      "values": {
         "rxbytes": "$.rxbytes",
         "txbytes": "$.txbytes",
         "rxspeed": "$.rxspeed",
@@ -150,12 +161,12 @@
     },
     {
       "command": "interface stat",
-      "root" : "$",
-      "param" : {
-        "name" : "PPTP0"
+      "root": "$",
+      "param": {
+        "name": "PPTP0"
       },
-      "tags" : {},
-      "values" : {
+      "tags": {},
+      "values": {
         "rxbytes": "$.rxbytes",
         "txbytes": "$.txbytes",
         "rxspeed": "$.rxspeed",
