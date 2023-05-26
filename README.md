@@ -18,21 +18,19 @@ Tested with KeeneticOS 3.5+
 
 InfluxDB 2.x (recommended) and InfluxDB 1.8+
 
-# InfluxDB 2.x / keenetic-grafana-monitoring 2.x migration manual
-
-See on [wiki](https://github.com/vitaliy-sk/keenetic-grafana-monitoring/wiki/How-to-migrate-to-keenetic-grafana-monitoring-v2-and-Influx-v2)
-
 # Preparation
 
 * Create configuration file `config.ini`
 
 ```ini
 [influx2]
-url=http://localhost:8086
+# If you are using docker-compose it should be http://influxdb:8086
+url=http://influxdb:8086
 # For influx v1.x please use "-" as a value
 org=keenetic
 # For influx v1.x please use "username:password" as a token
-token=<token>
+# See DOCKER_INFLUXDB_INIT_ADMIN_TOKEN in docker-compose.yml
+token=admin_token
 timeout=6000
 # For influx v1.x DB name
 bucket=keenetic
@@ -70,9 +68,9 @@ skip_auth=true
 
 # Run
 
-There are two options, you can run collector directly on the router or in Docker on separate host.
+There are two options, you can run the collector directly on the router or in Docker on a separate host.
 
-## Run in Docker on seprate host (recommended)
+## Run in Docker on a separate host (recommended)
 
 ```
 ---
@@ -81,7 +79,7 @@ version: '3.7'
 services:
 
   keenetic-grafana-monitoring:
-    image: techh/keenetic-grafana-monitoring:2.0.1
+    image: techh/keenetic-grafana-monitoring:2.0.2
     container_name: keenetic-grafana-monitoring
     # environment:
     #  - TZ=Europe/Kiev
@@ -109,6 +107,23 @@ services:
       - DOCKER_INFLUXDB_INIT_PASSWORD=password
 ```
 
+## Connect Grafana
+
+Update your Grafana connection config
+
+* Configuration -> Data sources
+* Click add custom header
+* Add header: 
+```
+Authorization		Token <TOKEN_VALUE>
+```
+
+**"Token"** word should be before the token value itself
+
+Do not specify username/password
+
+![Example](https://github.com/vitaliy-sk/keenetic-grafana-monitoring/assets/2773025/a3239473-8dc0-4bdc-a2d0-4b4719b810c6)
+
 ## Run on router
 
 * Copy repository content to your router `/opt/home/keenetic-grafana-monitoring`
@@ -129,3 +144,7 @@ nohup python /opt/home/keenetic-grafana-monitoring/keentic_influxdb_exporter.py 
 # Build Docker image
 
 `docker build -t keenetic-grafana-monitoring .`
+
+# InfluxDB 2.x / keenetic-grafana-monitoring 2.x migration manual
+
+See on [wiki](https://github.com/vitaliy-sk/keenetic-grafana-monitoring/wiki/How-to-migrate-to-keenetic-grafana-monitoring-v2-and-Influx-v2)
