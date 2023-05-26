@@ -109,6 +109,9 @@ services:
 
 ## Connect Grafana
 
+> **Note**
+> You need to have own Grafana installation or you could use free-tier [Grafana Cloud](https://grafana.com/grafana/)
+
 Update your Grafana connection config
 
 * Configuration -> Data sources
@@ -117,6 +120,8 @@ Update your Grafana connection config
 ```
 Authorization		Token <TOKEN_VALUE>
 ```
+
+> **Warning**
 
 **"Token"** word should be before the token value itself
 
