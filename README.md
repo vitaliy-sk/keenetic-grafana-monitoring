@@ -156,6 +156,80 @@ nohup "$PYTHON_BIN" /opt/home/keenetic-grafana-monitoring/keentic_influxdb_expor
 
 * Run `/opt/etc/init.d/S99keeneticgrafana start`
 
+# Running multiple collectors against the same InfluxDB
+
+If you want to monitor more than one Keenetic router with a single InfluxDB
+bucket, run one collector instance per router. Two knobs support this:
+
+1. `KEENETIC_CONFIG_DIR` environment variable — when set, the collector
+   loads `config/config.ini` and `config/metrics.json` from that directory
+   instead of the source tree. This lets a single install serve many
+   instances with per-router config directories.
+2. Optional `[tags]` section in `config.ini` — any `key=value` pairs there
+   are attached as tags to every metric point written to InfluxDB. Use it
+   to mark the source router so Grafana can filter per instance.
+
+Example `config.ini` for one instance:
+
+```ini
+[influx2]
+url=http://influxdb:8086
+org=keenetic
+token=<your token>
+bucket=keenetic
+timeout=6000
+[keenetic]
+admin_endpoint=http://192.0.2.1:80
+skip_auth=false
+login=monitoring
+password=<password>
+[collector]
+interval_sec=30
+[tags]
+router=home
+```
+
+Layout on disk (3 routers as an example):
+
+```
+/etc/keenetic-collector/
+├── home/config/{config.ini,metrics.json}
+├── office/config/{config.ini,metrics.json}
+└── cabin/config/{config.ini,metrics.json}
+```
+
+A systemd template unit lets you start them all from one install:
+
+```ini
+# /etc/systemd/system/keenetic-collector@.service
+[Unit]
+Description=Keenetic metrics collector (%i)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment=KEENETIC_CONFIG_DIR=/etc/keenetic-collector/%i
+WorkingDirectory=/opt/keenetic-grafana-monitoring
+ExecStart=/opt/keenetic-grafana-monitoring/.venv/bin/python /opt/keenetic-grafana-monitoring/keentic_influxdb_exporter.py
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Then:
+
+```
+systemctl enable --now keenetic-collector@home keenetic-collector@office keenetic-collector@cabin
+```
+
+The bundled Grafana dashboard includes a `Router` selector (populated from
+the `router` tag) so you can switch between instances. The default is
+`All`, which matches every source, including deployments that do not set
+the tag — so single-instance setups keep working unchanged.
+
 # Build Docker image
 
 `docker build -t keenetic-grafana-monitoring .`

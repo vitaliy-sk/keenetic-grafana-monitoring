@@ -144,7 +144,7 @@
           "measurement": "ip hotspot",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT last(\"speed\") as \"Ethernet\" FROM \"ip hotspot\" WHERE \"time\" > now() - 1m AND \"active\" = 1 AND $timeFilter GROUP BY \"mac\"",
+          "query": "SELECT last(\"speed\") as \"Ethernet\" FROM \"ip hotspot\" WHERE \"time\" > now() - 1m AND \"active\" = 1 AND $timeFilter AND \"router\" =~ /^(${router:regex})$/ GROUP BY \"mac\"",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "table",
@@ -193,7 +193,7 @@
           "hide": false,
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT last(\"signal\") as \"Wi-Fi\" FROM \"ip hotspot\"  WHERE  \"time\" > now() - 1m AND \"active\" = 1 AND $timeFilter GROUP BY \"mac\"",
+          "query": "SELECT last(\"signal\") as \"Wi-Fi\" FROM \"ip hotspot\"  WHERE  \"time\" > now() - 1m AND \"active\" = 1 AND $timeFilter AND \"router\" =~ /^(${router:regex})$/ GROUP BY \"mac\"",
           "rawQuery": true,
           "refId": "B",
           "resultFormat": "table",
@@ -285,7 +285,7 @@
           "measurement": "system",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT last(\"uptime\") FROM \"system\" LIMIT 1",
+          "query": "SELECT last(\"uptime\") FROM \"system\" WHERE \"router\" =~ /^$router$/ LIMIT 1",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -303,7 +303,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "router",
+              "operator": "=~",
+              "value": "/^$router$/"
+            }
+          ]
         }
       ],
       "title": "Uptime",
@@ -446,7 +452,7 @@
           ],
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT (mean(\"memtotal\") - mean(\"memfree\") - mean(\"membuffers\") - mean(\"memcache\")) as \"RAM Usage\" FROM \"system\" WHERE $timeFilter GROUP BY time($__interval) fill(null)",
+          "query": "SELECT (mean(\"memtotal\") - mean(\"memfree\") - mean(\"membuffers\") - mean(\"memcache\")) as \"RAM Usage\" FROM \"system\" WHERE $timeFilter AND \"router\" =~ /^(${router:regex})$/ GROUP BY time($__interval) fill(null)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -488,7 +494,7 @@
           ],
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT mean(\"cpuload\") as \"CPU Usage\" FROM \"system\" WHERE $timeFilter GROUP BY time($__interval) fill(null)",
+          "query": "SELECT mean(\"cpuload\") as \"CPU Usage\" FROM \"system\" WHERE $timeFilter AND \"router\" =~ /^(${router:regex})$/ GROUP BY time($__interval) fill(null)",
           "rawQuery": true,
           "refId": "B",
           "resultFormat": "time_series",
@@ -515,7 +521,7 @@
             "uid": "${DS_INFLUXDB_KEENETIC}"
           },
           "hide": false,
-          "query": "SELECT(last(\"temperature\")) as \"Temperature\" FROM \"interface\" WHERE $timeFilter GROUP BY time($__interval) fill(null)",
+          "query": "SELECT(last(\"temperature\")) as \"Temperature\" FROM \"interface\" WHERE $timeFilter AND \"router\" =~ /^(${router:regex})$/ GROUP BY time($__interval) fill(null)",
           "rawQuery": true,
           "refId": "C",
           "resultFormat": "time_series"
@@ -612,7 +618,7 @@
           "measurement": "internet status",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT last(\"internet\") as \"Internet\", last(\"dns-accessible\") as \"DNS\", last(\"gateway-accessible\") as \"Gateway\" FROM \"internet status\" WHERE $timeFilter",
+          "query": "SELECT last(\"internet\") as \"Internet\", last(\"dns-accessible\") as \"DNS\", last(\"gateway-accessible\") as \"Gateway\" FROM \"internet status\" WHERE $timeFilter AND \"router\" =~ /^(${router:regex})$/",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -720,7 +726,7 @@
           "measurement": "interface stat",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT non_negative_difference(mean(\"txbytes\")) FROM \"interface stat\" WHERE $timeFilter GROUP BY time($__interval), \"name\" fill(null)",
+          "query": "SELECT non_negative_difference(mean(\"txbytes\")) FROM \"interface stat\" WHERE $timeFilter AND \"router\" =~ /^(${router:regex})$/ GROUP BY time($__interval), \"name\" fill(null)",
           "rawQuery": true,
           "refId": "B",
           "resultFormat": "time_series",
@@ -766,7 +772,7 @@
           ],
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT non_negative_difference(mean(\"rxbytes\")) FROM \"interface stat\" WHERE $timeFilter GROUP BY time($__interval), \"name\" fill(null)",
+          "query": "SELECT non_negative_difference(mean(\"rxbytes\")) FROM \"interface stat\" WHERE $timeFilter AND \"router\" =~ /^(${router:regex})$/ GROUP BY time($__interval), \"name\" fill(null)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -901,7 +907,7 @@
           "measurement": "interface stat",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT(mean(\"txspeed\")) FROM \"interface stat\" WHERE $timeFilter GROUP BY time($__interval), \"name\" fill(null)",
+          "query": "SELECT(mean(\"txspeed\")) FROM \"interface stat\" WHERE $timeFilter AND \"router\" =~ /^(${router:regex})$/ GROUP BY time($__interval), \"name\" fill(null)",
           "rawQuery": true,
           "refId": "B",
           "resultFormat": "time_series",
@@ -947,7 +953,7 @@
           ],
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT(mean(\"rxspeed\")) FROM \"interface stat\" WHERE $timeFilter GROUP BY time($__interval), \"name\" fill(null)",
+          "query": "SELECT(mean(\"rxspeed\")) FROM \"interface stat\" WHERE $timeFilter AND \"router\" =~ /^(${router:regex})$/ GROUP BY time($__interval), \"name\" fill(null)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1082,7 +1088,7 @@
           "measurement": "ip hotspot",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT non_negative_difference(mean(\"rxbytes\")) + non_negative_difference(mean(\"txbytes\")) FROM \"ip hotspot\" WHERE $timeFilter AND \"active\" = 1 GROUP BY time($__interval), \"name\" fill(null)",
+          "query": "SELECT non_negative_difference(mean(\"rxbytes\")) + non_negative_difference(mean(\"txbytes\")) FROM \"ip hotspot\" WHERE $timeFilter AND \"router\" =~ /^(${router:regex})$/ AND \"active\" = 1 GROUP BY time($__interval), \"name\" fill(null)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1241,7 +1247,7 @@
           "measurement": "ip hotspot",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT mean(\"signal\") FROM \"ip hotspot\" WHERE $timeFilter AND \"active\" = 1 GROUP BY time($__interval), \"name\", \"mode\" fill(null)",
+          "query": "SELECT mean(\"signal\") FROM \"ip hotspot\" WHERE $timeFilter AND \"router\" =~ /^(${router:regex})$/ AND \"active\" = 1 GROUP BY time($__interval), \"name\", \"mode\" fill(null)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1376,7 +1382,7 @@
           "measurement": "ip hotspot",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT mean(\"txrate\") FROM \"ip hotspot\" WHERE $timeFilter AND \"active\" = 1 AND \"mode\" != \"\" GROUP BY time($__interval), \"name\", \"mode\" fill(null)",
+          "query": "SELECT mean(\"txrate\") FROM \"ip hotspot\" WHERE $timeFilter AND \"router\" =~ /^(${router:regex})$/ AND \"active\" = 1 AND \"mode\" != \"\" GROUP BY time($__interval), \"name\", \"mode\" fill(null)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1504,7 +1510,7 @@
           "measurement": "system",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT mean(\"memtotal\") - mean(\"memfree\") FROM \"system\" WHERE $timeFilter GROUP BY time($__interval) fill(null)",
+          "query": "SELECT mean(\"memtotal\") - mean(\"memfree\") FROM \"system\" WHERE $timeFilter AND \"router\" =~ /^(${router:regex})$/ GROUP BY time($__interval) fill(null)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -2100,7 +2106,7 @@
           "measurement": "interface",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT last(\"state\") as \"State\" FROM \"interface\" WHERE $timeFilter AND \"description\" != '' GROUP BY \"description\"",
+          "query": "SELECT last(\"state\") as \"State\" FROM \"interface\" WHERE $timeFilter AND \"router\" =~ /^(${router:regex})$/ AND \"description\" != '' GROUP BY \"description\"",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "table",
@@ -2246,7 +2252,7 @@
           "measurement": "processes",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT mean(\"cpu\") AS \"CPU\", mean(\"memory\") AS \"RAM\" FROM \"processes\" WHERE $timeFilter GROUP BY \"name\"",
+          "query": "SELECT mean(\"cpu\") AS \"CPU\", mean(\"memory\") AS \"RAM\" FROM \"processes\" WHERE $timeFilter AND \"router\" =~ /^(${router:regex})$/ GROUP BY \"name\"",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "table",
@@ -2300,7 +2306,32 @@
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "name": "router",
+        "label": "Router",
+        "type": "query",
+        "datasource": {
+          "type": "influxdb",
+          "uid": "${DS_INFLUXDB_KEENETIC}"
+        },
+        "query": "SHOW TAG VALUES FROM \"system\" WITH KEY = \"router\"",
+        "refresh": 1,
+        "includeAll": true,
+        "allValue": ".*",
+        "multi": true,
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "options": [],
+        "hide": 0,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1
+      }
+    ]
   },
   "time": {
     "from": "now-24h",

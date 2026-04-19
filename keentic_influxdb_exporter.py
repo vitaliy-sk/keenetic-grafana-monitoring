@@ -106,7 +106,7 @@ class KeeneticCollector(object):
 
 if __name__ == '__main__':
     logging.info("\n\n%s\n", BANNER)
-    pwd = os.path.dirname(os.path.realpath(__file__))
+    pwd = os.environ.get('KEENETIC_CONFIG_DIR') or os.path.dirname(os.path.realpath(__file__))
     metrics_configuration = json.load(open(pwd + "/config/metrics.json", "r"))
 
     metrics = metrics_configuration['metrics']
