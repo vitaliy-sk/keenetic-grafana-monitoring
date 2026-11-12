@@ -15,4 +15,11 @@ class InfuxWriter(object):
         logging.info("Connecting to InfluxDB: " + self._configuration['url'])
 
     def write_metrics(self, metrics):
-        self._write_api.write(bucket=self._configuration['bucket'], org=self._configuration['org'], record=metrics)
+        if not metrics:
+            return 0
+        try:
+            self._write_api.write(bucket=self._configuration['bucket'], org=self._configuration['org'], record=metrics)
+            return len(metrics)
+        except Exception:
+            logging.exception(f"Failed to write {len(metrics)} points to InfluxDB bucket '{self._configuration['bucket']}'")
+            return 0

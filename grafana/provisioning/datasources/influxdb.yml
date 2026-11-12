@@ -1,0 +1,21 @@
+apiVersion: 1
+
+# InfluxQL datasource for the bundled dashboard (grafana-dashboard.json / grafana.com 12723).
+# InfluxQL against InfluxDB 2.x requires a DBRP mapping, see README.md and the
+# influxdb-init-dbrp service in docker-compose.yml.
+# The token is shared with the InfluxDB container via the
+# DOCKER_INFLUXDB_INIT_ADMIN_TOKEN environment variable.
+datasources:
+  - name: InfluxDB-Keenetic
+    uid: influxdb-keenetic
+    type: influxdb
+    access: proxy
+    url: http://influxdb:8086
+    isDefault: true
+    editable: true
+    jsonData:
+      httpMode: GET
+      dbName: keenetic
+      httpHeaderName1: Authorization
+    secureJsonData:
+      httpHeaderValue1: Token ${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN}

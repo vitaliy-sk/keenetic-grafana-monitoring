@@ -2,24 +2,28 @@
 version: '3.7'
 
 services:
-  
+
   keenetic-grafana-monitoring:
-    build: .
+    image: techh/keenetic-grafana-monitoring:2.0.3
     container_name: keenetic-grafana-monitoring
-   # environment:
-   #   - TZ=Europe/Kiev
+    # environment:
+    #   - TZ=Europe/Kiev
     volumes:
       - ./config/config.ini:/home/config/config.ini:ro
+      # Optionally you can override metrics
       - ./config/metrics.json:/home/config/metrics.json:ro
     restart: always
+    depends_on:
+      influxdb:
+        condition: service_healthy
 
   # Influx 2.x
 
   influxdb:
-    image: 'influxdb:2.1'
+    image: 'influxdb:2.7'
     volumes:
       - ./_data/influxdb:/var/lib/influxdb
-    ports: 
+    ports:
       - 8086:8086
     environment:
       - DOCKER_INFLUXDB_INIT_MODE=setup
@@ -29,14 +33,67 @@ services:
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=admin_token
       - DOCKER_INFLUXDB_INIT_USERNAME=admin
       - DOCKER_INFLUXDB_INIT_PASSWORD=password
+    healthcheck:
+      test: ["CMD", "influx", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
+
+  # One-shot job. The bundled Grafana dashboard queries InfluxDB with InfluxQL,
+  # which requires a DBRP mapping between a 1.x-style database name and the bucket.
+  # Without this mapping every panel fails with "database not found".
+  influxdb-init-dbrp:
+    image: 'influxdb:2.7'
+    depends_on:
+      influxdb:
+        condition: service_healthy
+    environment:
+      - INFLUX_HOST=http://influxdb:8086
+      - INFLUX_ORG=keenetic
+      - INFLUX_TOKEN=admin_token
+      - DOCKER_INFLUXDB_INIT_BUCKET=keenetic
+    command: >
+      /bin/sh -c '
+      set -e;
+      BUCKET_ID=$$(influx bucket list --name "$$DOCKER_INFLUXDB_INIT_BUCKET" --hide-headers | awk '"'"'{print $$1}'"'"');
+      if influx v1 dbrp list --db "$$DOCKER_INFLUXDB_INIT_BUCKET" --hide-headers | grep -q .; then
+        echo "DBRP mapping for db=$$DOCKER_INFLUXDB_INIT_BUCKET already exists, skipping";
+      else
+        influx v1 dbrp create --db "$$DOCKER_INFLUXDB_INIT_BUCKET" --rp autogen --bucket-id "$$BUCKET_ID" --default;
+        echo "DBRP mapping for db=$$DOCKER_INFLUXDB_INIT_BUCKET created";
+      fi
+      '
+
+  # Optional all-in-one Grafana with automatic datasource and dashboard provisioning.
+  # Remove this service if you use an existing Grafana installation.
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    depends_on:
+      influxdb:
+        condition: service_healthy
+    ports:
+      - 3000:3000
+    environment:
+      # Referenced by grafana/provisioning/datasources/influxdb.yml,
+      # keep it in sync with DOCKER_INFLUXDB_INIT_ADMIN_TOKEN above.
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=admin_token
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    restart: always
+
+volumes:
+  grafana_data: {}
 
   # Influx 1.x
-  
+
   # influxdb:
   #   image: 'influxdb:1.8.1'
   #   volumes:
   #     - ./_data/influxdb:/var/lib/influxdb
-  #   ports: 
+  #   ports:
   #     - 8086:8086
   #   environment:
   #     - INFLUXDB_DB=db0

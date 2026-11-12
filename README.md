@@ -4,7 +4,7 @@
  | ' / ___  ___ _ __   ___| |_ _  ___  | |     ___ | | | ___  ___| |_ ___  _ __ 🇺🇦🇺🇦🇺🇦 
  |  < / _ \/ _ \ '_ \ / _ \ __| |/ __| | |    / _ \| | |/ _ \/ __| __/ _ \| '__|
  | . \  __/  __/ | | |  __/ |_| | (__  | |___| (_) | | |  __/ (__| || (_) | |   
- |_|\_\___|\___|_| |_|\___|\__|_|\___|  \_____\___/|_|_|\___|\___|\__\___/|_|   
+ |_|\_\___|\___|_| |_|\___|\__|_|\___|  \_____\___/|_|_|\___|\___|\__\___|_|   
                                                                                 
 ```
 
@@ -45,6 +45,20 @@ interval_sec=30
 
 * Copy [metrics.json](https://github.com/vitaliy-sk/keenetic-grafana-monitoring/blob/master/config/metrics.json) and edit (Optional)
 
+* InfluxDB 2.x only: create a DBRP mapping
+
+The bundled Grafana dashboard queries InfluxDB with **InfluxQL**. InfluxDB 2.x serves InfluxQL only through the 1.x compatibility API, which requires a DBRP mapping between a 1.x-style database name and a bucket. Without it every dashboard panel fails with `database not found`.
+
+```bash
+# one-time command, requires the bucket id
+influx v1 dbrp create --db keenetic --rp autogen --bucket-id <bucket_id> --default
+```
+
+If you use the `docker-compose.yml` from this repository, the one-shot `influxdb-init-dbrp` service creates this mapping automatically.
+
+> **Note**
+> Do not switch the Grafana datasource to Flux to fix this: the dashboard queries are written in InfluxQL and will not work with a Flux datasource.
+
 * Create admin user (Users and access -> Create user, allow 'Web interface' and 'Prohibit saving system settings') 
 
 * (Alternative to create user) Expose Keenetic API on your router
@@ -64,7 +78,7 @@ Update `conifg.ini`
 skip_auth=true
 ```
 
-* Import Grafana dashboard from [grafana.com](https://grafana.com/grafana/dashboards/12723)
+* Import Grafana dashboard from [grafana.com](https://grafana.com/grafana/dashboards/12723) (not needed when using the provisioning files from this repository)
 
 # Run
 
@@ -77,6 +91,8 @@ There are three options: run the collector locally with `uv`, run it in Docker o
 * Start the collector `uv run python keentic_influxdb_exporter.py`
 
 ## Run in Docker on a separate host (recommended)
+
+The collector starts writing points to InfluxDB on its own, but to see any graphs you also need the DBRP mapping and a Grafana datasource, which first-time users often miss. The `docker-compose.yml` in this repository wires everything together: InfluxDB with a healthcheck, a one-shot job that creates the DBRP mapping, Grafana with the datasource and dashboard provisioned automatically.
 
 ```
 ---
@@ -94,14 +110,17 @@ services:
       # Optionally you can override metrics
       - ./config/metrics.json:/home/config/metrics.json:ro
     restart: always
-  
+    depends_on:
+      influxdb:
+        condition: service_healthy
+
   # Influx 2.x
 
   influxdb:
-    image: 'influxdb:2.1'
+    image: 'influxdb:2.7'
     volumes:
       - ./_data/influxdb:/var/lib/influxdb
-    ports: 
+    ports:
       - 8086:8086
     environment:
       - DOCKER_INFLUXDB_INIT_MODE=setup
@@ -111,6 +130,59 @@ services:
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=admin_token
       - DOCKER_INFLUXDB_INIT_USERNAME=admin
       - DOCKER_INFLUXDB_INIT_PASSWORD=password
+    healthcheck:
+      test: ["CMD", "influx", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
+
+  # One-shot job. The bundled Grafana dashboard queries InfluxDB with InfluxQL,
+  # which requires a DBRP mapping between a 1.x-style database name and the bucket.
+  # Without this mapping every panel fails with "database not found".
+  influxdb-init-dbrp:
+    image: 'influxdb:2.7'
+    depends_on:
+      influxdb:
+        condition: service_healthy
+    environment:
+      - INFLUX_HOST=http://influxdb:8086
+      - INFLUX_ORG=keenetic
+      - INFLUX_TOKEN=admin_token
+      - DOCKER_INFLUXDB_INIT_BUCKET=keenetic
+    command: >
+      /bin/sh -c '
+      set -e;
+      BUCKET_ID=$$(influx bucket list --name "$$DOCKER_INFLUXDB_INIT_BUCKET" --hide-headers | awk '"'"'{print $$1}'"'"');
+      if influx v1 dbrp list --db "$$DOCKER_INFLUXDB_INIT_BUCKET" --hide-headers | grep -q .; then
+        echo "DBRP mapping for db=$$DOCKER_INFLUXDB_INIT_BUCKET already exists, skipping";
+      else
+        influx v1 dbrp create --db "$$DOCKER_INFLUXDB_INIT_BUCKET" --rp autogen --bucket-id "$$BUCKET_ID" --default;
+        echo "DBRP mapping for db=$$DOCKER_INFLUXDB_INIT_BUCKET created";
+      fi
+      '
+
+  # Optional all-in-one Grafana with automatic datasource and dashboard provisioning.
+  # Remove this service if you use an existing Grafana installation.
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    depends_on:
+      influxdb:
+        condition: service_healthy
+    ports:
+      - 3000:3000
+    environment:
+      # Referenced by grafana/provisioning/datasources/influxdb.yml,
+      # keep it in sync with DOCKER_INFLUXDB_INIT_ADMIN_TOKEN above.
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=admin_token
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    restart: always
+
+volumes:
+  grafana_data: {}
 ```
 
 ## Connect Grafana
@@ -118,9 +190,18 @@ services:
 > **Note**
 > You need to have own Grafana installation or you could use free-tier [Grafana Cloud](https://grafana.com/grafana/)
 
+**Option A: automatic (when using the compose file above)**
+
+The datasource `InfluxDB-Keenetic` and the `Keenetic` dashboard folder are provisioned from `grafana/provisioning/`, nothing to do in the UI. The datasource takes the InfluxDB token from the `DOCKER_INFLUXDB_INIT_ADMIN_TOKEN` environment variable.
+
+**Option B: manual**
+
 Update your Grafana connection config
 
 * Configuration -> Data sources
+* Query language: InfluxQL
+* URL: `http://<influxdb-host>:8086`
+* Database: `keenetic` (the bucket name)
 * Click add custom header
 * Add header: 
 ```
@@ -135,7 +216,18 @@ Do not specify username/password
 
 ![Example](https://github.com/vitaliy-sk/keenetic-grafana-monitoring/assets/2773025/a3239473-8dc0-4bdc-a2d0-4b4719b810c6)
 
-## Run on router
+# Troubleshooting
+
+* The collector logs one line per cycle, e.g. `Collection cycle finished, 148 points written to InfluxDB`. If this line is missing or reports 0 points for a long time, check the router credentials in `config.ini` and the error messages above it.
+* Dashboard panels show `database not found`: the DBRP mapping is missing, see [Preparation](#preparation).
+* Dashboard panels show `database name required`: the datasource has no database set (manual setup: the Database field; provisioning: `jsonData.dbName`).
+* Not sure the data reaches InfluxDB:
+
+```bash
+docker exec -it influxdb influx query 'from(bucket: "keenetic") |> range(start: -2m) |> limit(n: 5)'
+```
+
+# Run on router
 
 * Copy repository content to your router `/opt/home/keenetic-grafana-monitoring`
 * Install Python `opkg install python3`
