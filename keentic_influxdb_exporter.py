@@ -19,8 +19,31 @@ BANNER = r"""
  | ' / ___  ___ _ __   ___| |_ _  ___  | |     ___ | | | ___  ___| |_ ___  _ __🇺🇦  🇺🇦  🇺🇦
  |  < / _ \/ _ \ '_ \ / _ \ __| |/ __| | |    / _ \| | |/ _ \/ __| __/ _ \| '__|
  | . \  __/  __/ | | |  __/ |_| | (__  | |___| (_) | | |  __/ (__| || (_) | |
- |_|\_\___|\___|_| |_|\___|\__|_|\___|  \_____\___/|_|_|\___|\___|\__\___/|_|
+ |_|\_\___|\___|_| |_|\___|\__|_|\___|  \_____\___/|_|_|\___|\___|\__\___|_|
 """
+
+REQUIRED_CONFIG = {
+    'influx2': ['url', 'org', 'token', 'bucket'],
+    'keenetic': ['admin_endpoint'],
+    'collector': ['interval_sec'],
+}
+
+
+def validate_config(config: configparser.ConfigParser):
+    missing = []
+    for section, options in REQUIRED_CONFIG.items():
+        if not config.has_section(section):
+            missing.append(f"[{section}] section")
+            continue
+        missing.extend(f"{section}.{option}" for option in options
+                       if not config.get(section, option, fallback='').strip())
+
+    if config.getboolean('keenetic', 'skip_auth', fallback=False) is False:
+        missing.extend(f"keenetic.{option}" for option in ('login', 'password')
+                       if not config.get('keenetic', option, fallback='').strip())
+
+    if missing:
+        raise SystemExit(f"Invalid configuration, missing or empty options: {', '.join(missing)}")
 
 
 def json_path_init(paths: Dict[str, str]):
@@ -115,6 +138,8 @@ if __name__ == '__main__':
     config_path = pwd + "/config/config.ini"
     config.read(config_path)
 
+    validate_config(config)
+
     infuxdb_writer = InfuxWriter(config['influx2'], config_path)
 
     keenetic_config = config['keenetic']
@@ -130,10 +155,11 @@ if __name__ == '__main__':
         wait_interval = config['collector'].getint('interval_sec')
         logging.info(f"Configuration done. Start collecting with interval: {wait_interval} sec")
         while True:
+            points = 0
             try:
                 for collector in collectors:
-                    metrics = collector.collect()
-                    infuxdb_writer.write_metrics(metrics)
+                    points += infuxdb_writer.write_metrics(collector.collect())
+                logging.info(f"Collection cycle finished, {points} points written to InfluxDB")
             except Exception as e:
                 logging.exception(f"Collector failed")
 
